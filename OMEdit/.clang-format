@@ -1,0 +1,28 @@
+# used with clang-format-16
+BasedOnStyle: LLVM
+AllowShortEnumsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+
+BraceWrapping:
+  AfterClass: true
+  AfterFunction: true
+  AfterNamespace: true
+
+BreakBeforeBinaryOperators: NonAssignment
+BreakBeforeBraces: Custom
+BreakBeforeTernaryOperators: false
+ColumnLimit: 0
+ConstructorInitializerIndentWidth: 2
+ContinuationIndentWidth: 0
+IndentCaseLabels: true
+MaxEmptyLinesToKeep: 2
+NamespaceIndentation: All
+SortIncludes: false
+SpaceBeforeRangeBasedForLoopColon: false
+EmptyLineBeforeAccessModifier: Never
+PointerAlignment: Right
+
+SpaceBeforeParens: Custom
+SpaceBeforeParensOptions:
+  AfterOverloadedOperator: true
+
