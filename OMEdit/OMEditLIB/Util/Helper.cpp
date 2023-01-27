@@ -440,7 +440,7 @@ QString Helper::dataReconciliation;
 void Helper::initHelperVariables()
 {
   /* Global translated variables */
-  Helper::newModelicaClass = tr("New Modelica Class");
+  // Helper::newModelicaClass = tr("New Modelica Class");
   Helper::createNewModelicaClass = tr("Create New Modelica Class");
   Helper::openModelicaFiles = tr("Open Model/Library File(s)");
   Helper::openConvertModelicaFiles = tr("Open/Convert Modelica File(s) With Encoding");

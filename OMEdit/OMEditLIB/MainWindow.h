@@ -46,6 +46,8 @@ extern "C" {
 #error "OMEdit requires Qt 5.0.0 or newer"
 #endif
 
+#include "ui_MainWindow.h"
+
 #include <QMainWindow>
 #include <QDialog>
 #include <QProgressBar>
@@ -91,7 +93,7 @@ class StatusBar;
 class TraceabilityGraphViewWidget;
 class SearchWidget;
 
-class MainWindow : public QMainWindow
+class MainWindow : public QMainWindow, public Ui_MainWindow
 {
   Q_OBJECT
 public:
@@ -139,7 +141,7 @@ public:
   GitCommands* getGitCommands() {return mpGitCommands;}
   CommitChangesDialog* getCommitChangesDialog() {return mpCommitChangesDialog;}
   TraceabilityInformationURI* getTraceabilityInformationURI() {return mpTraceabilityInformationURI;}
-  StatusBar* getStatusBar() {return mpStatusBar;}
+  QStatusBar* getStatusBar() {return statusBar();}
   QProgressBar* getProgressBar() {return mpProgressBar;}
   void showProgressBar() {mpProgressBar->setVisible(true);}
   void hideProgressBar() {mpProgressBar->setVisible(false);}
@@ -306,13 +308,13 @@ private:
   QProgressBar *mpProgressBar;
   Label *mpPositionLabel;
   QTabBar *mpPerspectiveTabbar;
-  StatusBar *mpStatusBar;
+  // QStatusBar *mpStatusBar;
   QTimer *mpAutoSaveTimer;
   QShortcut *mpSearchBrowserShortcut;
   // File Menu
   // Modelica File Actions
-  QAction *mpNewModelicaClassAction;
-  QAction *mpNewSSPModelAction;
+  // QAction *mpNewModelicaClassAction;
+  // QAction *mpNewSSPModelAction;
   QAction *mpOpenModelicaFileAction;
   QAction *mpOpenModelicaFileWithEncodingAction;
   QAction *mpLoadModelicaLibraryAction;
@@ -451,7 +453,7 @@ private:
   QAction *mpAddSubModelAction;
   QAction *mpOMSSimulateAction;
   // Toolbars
-  QMenu *mpFileMenu;
+  // QMenu *mpFileMenu;
   QMenu *mpNewModelMenu;
   QMenu *mpRecentFilesMenu;
   QMenu *mpLibrariesMenu;

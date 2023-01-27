@@ -82,6 +82,8 @@
 
 #include <QtSvg/QSvgGenerator>
 
+MainWindow *MainWindow::mpInstance = 0;
+
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent), mExitApplicationStatus(false)
 {
@@ -108,14 +110,14 @@ MainWindow::MainWindow(QWidget *parent)
   qRegisterMetaType<QProcess::ExitStatus>("QProcess::ExitStatus");
   qRegisterMetaType<StringHandler::SimulationMessageType>("StringHandler::SimulationMessageType");
   /*! @note The above three lines registers the types for simulaiton threads. Do not remove them. */
-  setObjectName("MainWindow");
+  // setObjectName("MainWindow");
   setWindowTitle(Helper::applicationName + " - "  + Helper::applicationIntroText);
   setWindowIcon(QIcon(":/Resources/icons/modeling.png"));
   setMinimumSize(400, 300);
   setContentsMargins(1, 1, 1, 1);
-}
 
-MainWindow *MainWindow::mpInstance = 0;
+  mpInstance = this;
+}
 
 /*!
  * \brief MainWindow::instance
@@ -137,6 +139,8 @@ MainWindow *MainWindow::instance()
  */
 void MainWindow::setUpMainWindow(threadData_t *threadData)
 {
+  Ui_MainWindow::setupUi(this);
+
   if (!isTestsuiteRunning()) {
     // Reopen the standard output stream.
     QString outputFileName = Utilities::tempDirectory() + "/omeditoutput.txt";
@@ -217,15 +221,15 @@ void MainWindow::setUpMainWindow(threadData_t *threadData)
   // change the perspective when perspective tab bar selection is changed
   connect(mpPerspectiveTabbar, SIGNAL(currentChanged(int)), SLOT(perspectiveTabChanged(int)));
   // Create an object of StatusBar
-  mpStatusBar = new StatusBar();
-  mpStatusBar->setObjectName("statusBar");
-  mpStatusBar->setContentsMargins(0, 0, 0, 0);
+  // mpStatusBar = statusBar();
+  // mpStatusBar->setObjectName("statusBar");
+  // mpStatusBar->setContentsMargins(0, 0, 0, 0);
   // add items to statusbar
   mpStatusBar->addPermanentWidget(mpProgressBar);
   mpStatusBar->addPermanentWidget(mpPositionLabel);
   mpStatusBar->addPermanentWidget(mpPerspectiveTabbar);
   // set status bar for MainWindow
-  setStatusBar(mpStatusBar);
+  // setStatusBar(mpStatusBar);
   // Create an object of LibraryWidget
   mpLibraryWidget = new LibraryWidget(this);
   // Create LibraryDockWidget
@@ -3392,14 +3396,14 @@ void MainWindow::createActions()
   /* Menu Actions */
   // File Menu
   // create new Modelica class action
-  mpNewModelicaClassAction = new QAction(Helper::newModelicaClass, this);
+  // mpNewModelicaClassAction = new QAction(Helper::newModelicaClass, this);
   mpNewModelicaClassAction->setStatusTip(Helper::createNewModelicaClass);
-  mpNewModelicaClassAction->setShortcut(QKeySequence("Ctrl+n"));
-  connect(mpNewModelicaClassAction, SIGNAL(triggered()), SLOT(createNewModelicaClass()));
+  // mpNewModelicaClassAction->setShortcut(QKeySequence("Ctrl+n"));
+  // connect(mpNewModelicaClassAction, SIGNAL(triggered()), SLOT(createNewModelicaClass()));
   // create new SSP Model action
-  mpNewSSPModelAction = new QAction(Helper::newOMSimulatorModel, this);
+  // mpNewSSPModelAction = new QAction(Helper::newOMSimulatorModel, this);
   mpNewSSPModelAction->setStatusTip(Helper::newOMSimulatorModelTip);
-  connect(mpNewSSPModelAction, SIGNAL(triggered()), SLOT(createNewSSPModel()));
+  // connect(mpNewSSPModelAction, SIGNAL(triggered()), SLOT(createNewSSPModel()));
   // open Modelica file action
   mpOpenModelicaFileAction = new QAction(QIcon(":/Resources/icons/open.svg"), Helper::openModelicaFiles, this);
   mpOpenModelicaFileAction->setShortcut(QKeySequence("Ctrl+o"));
@@ -3923,11 +3927,11 @@ void MainWindow::createMenus()
   //Create the menubar
   //Create the menus
   // File menu
-  mpFileMenu = new QMenu(menuBar());
-  mpFileMenu->setObjectName("menuFile");
-  mpFileMenu->setTitle(tr("&File"));
+  // mpFileMenu = new QMenu(menuBar());
+  // mpFileMenu->setObjectName("menuFile");
+  // mpFileMenu->setTitle(tr("&File"));
   // add actions to File menu
-  mpFileMenu->addMenu(mpNewModelMenu);
+  // mpFileMenu->addMenu(mpNewModelMenu);
   mpFileMenu->addAction(mpOpenModelicaFileAction);
   mpFileMenu->addAction(mpOpenModelicaFileWithEncodingAction);
   mpFileMenu->addAction(mpLoadModelicaLibraryAction);
@@ -3998,17 +4002,17 @@ void MainWindow::createMenus()
   mpFileMenu->addSeparator();
   mpFileMenu->addAction(mpQuitAction);
   // add File menu to menu bar
-  menuBar()->addAction(mpFileMenu->menuAction());
+  // menuBar()->addAction(mpFileMenu->menuAction());
   // Edit menu
-  QMenu *pEditMenu = new QMenu(menuBar());
-  pEditMenu->setTitle(tr("&Edit"));
+  // QMenu *mpEditMenu = new QMenu(menuBar());
+  // pEditMenu->setTitle(tr("&Edit"));
   // add actions to Edit menu
-  pEditMenu->addAction(mpUndoAction);
-  pEditMenu->addAction(mpRedoAction);
-  pEditMenu->addSeparator();
-  pEditMenu->addAction(mpFilterClassesAction);
+  mpEditMenu->addAction(mpUndoAction);
+  mpEditMenu->addAction(mpRedoAction);
+  mpEditMenu->addSeparator();
+  mpEditMenu->addAction(mpFilterClassesAction);
   // add Edit menu to menu bar
-  menuBar()->addAction(pEditMenu->menuAction());
+  // menuBar()->addAction(pEditMenu->menuAction());
   // View menu
   QMenu *pViewMenu = new QMenu(menuBar());
   pViewMenu->setTitle(tr("&View"));
