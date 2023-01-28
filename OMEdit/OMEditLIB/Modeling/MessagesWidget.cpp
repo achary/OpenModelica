@@ -247,7 +247,7 @@ void MessageWidget::addGUIMessage(MessageItem messageItem)
   if (messageItem.getFileName().isEmpty()) { // if custom error message
     errorMessage = message;
   } else if (messageItem.getMessageItemType()== MessageItem::CompositeModel ||
-             MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(messageItem.getFileName())) {
+             MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(messageItem.getFileName())) {
     // If the class is only loaded in AST via loadString then create link for the error message.
     errorMessage = linkFormat.arg(messageItem.getFileName())
         .arg(messageItem.getLocation())
@@ -257,7 +257,7 @@ void MessageWidget::addGUIMessage(MessageItem messageItem)
   } else {
     // Find the class name using the file name and line number.
     LibraryTreeItem *pLibraryTreeItem;
-    pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getLibraryTreeItemFromFile(messageItem.getFileName(),
+    pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getLibraryTreeItemFromFile(messageItem.getFileName(),
                                                                                                                      messageItem.getLineStart().toInt());
     if (pLibraryTreeItem) {
       errorMessage = linkFormat.arg(pLibraryTreeItem->getNameStructure())
@@ -313,23 +313,23 @@ void MessageWidget::openErrorMessageClass(QUrl url)
     className.remove(0, 1);
   }
   // find the class that has the error
-  LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(className);
+  LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(className);
   if (pLibraryTreeItem) {
     /* the error could be in P.M but we get P as error class in this case we see if current class has the same file as P
      * and also contains the line number. If we have correct current class then no need to show root parent class i.e., P.
      */
-    ModelWidget *pModelWidget = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget();
+    ModelWidget *pModelWidget = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget();
     if (pModelWidget /* Might be NULL */ && (pModelWidget->getLibraryTreeItem()->getFileName().compare(pLibraryTreeItem->getFileName()) == 0) &&
         pModelWidget->getLibraryTreeItem()->inRange(lineNumber)) {
       pLibraryTreeItem = pModelWidget->getLibraryTreeItem();
     }
-    MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pLibraryTreeItem);
+    MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pLibraryTreeItem);
     if (pLibraryTreeItem->getModelWidget() && pLibraryTreeItem->getModelWidget()->getEditor()) {
       pLibraryTreeItem->getModelWidget()->getTextViewToolButton()->setChecked(true);
       pLibraryTreeItem->getModelWidget()->getEditor()->getPlainTextEdit()->goToLineNumber(lineNumber);
     }
   } else {
-    QMessageBox::information(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::information),
+    QMessageBox::information(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::information),
                              GUIMessages::getMessage(GUIMessages::CLASS_NOT_FOUND)
                              .arg(className), Helper::ok);
   }
@@ -570,7 +570,7 @@ bool MessagesWidget::closeTab(int index)
   if (pSimulationOutputWidget && !pSimulationOutputWidget->isCompilationProcessRunning() && !pSimulationOutputWidget->isSimulationProcessRunning()) {
     mpMessagesTabWidget->removeTab(index);
     if (pSimulationOutputWidget->getSimulationOptions().isInteractiveSimulation()) {
-      MainWindow::instance()->getSimulationDialog()->removeSimulationOutputWidget(pSimulationOutputWidget);
+      MainWindowServices::instance()->getSimulationDialog()->removeSimulationOutputWidget(pSimulationOutputWidget);
     }
     return true;
   }

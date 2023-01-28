@@ -157,7 +157,7 @@ void TLMCoSimulationOutputWidget::clear()
   stopManager();
   mpTLMCoSimulationProcessThread->exit();
   mpTLMCoSimulationProcessThread->wait();
-  MainWindow::instance()->getTLMCoSimulationDialog()->setIsTLMCoSimulationRunning(false);
+  MainWindowServices::instance()->getTLMCoSimulationDialog()->setIsTLMCoSimulationRunning(false);
 }
 
 /*!
@@ -260,7 +260,7 @@ void TLMCoSimulationOutputWidget::managerProcessFinished(int exitCode, QProcess:
   mpProgressLabel->setText(tr("Co-simulation of the composite model <b>%1</b> is finished.").arg(mTLMCoSimulationOptions.getClassName()));
   mpProgressBar->setValue(mpProgressBar->maximum());
   mpStopManagerButton->setEnabled(false);
-  MainWindow::instance()->getTLMCoSimulationDialog()->simulationProcessFinished(mTLMCoSimulationOptions, mResultFileLastModifiedDateTime);
+  MainWindowServices::instance()->getTLMCoSimulationDialog()->simulationProcessFinished(mTLMCoSimulationOptions, mResultFileLastModifiedDateTime);
 }
 
 /*!

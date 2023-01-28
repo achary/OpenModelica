@@ -108,7 +108,7 @@ bool DynamicAnnotation::update(double time, Element *parent)
                 vname = QString("%1.%2").arg(parent->getName(), vname);
               }
 
-              return FlatModelica::Expression(MainWindow::instance()->getVariablesWidget()->readVariableValue(vname, time));
+              return FlatModelica::Expression(MainWindowServices::instance()->getVariablesWidget()->readVariableValue(vname, time));
             }));
     return true;
   }

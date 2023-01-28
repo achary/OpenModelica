@@ -137,7 +137,7 @@ BreakpointDialog::BreakpointDialog(BreakpointTreeItem *pBreakpointTreeItem, Brea
   */
 void BreakpointDialog::browseClasses()
 {
-  MainWindow *pMainWindow = MainWindow::instance();
+  MainWindowServices *pMainWindowServices = MainWindowServices::instance();
   LibraryBrowseDialog *pLibraryBrowseDialog = new LibraryBrowseDialog(tr("Select Class"), mpFileNameTextBox, pMainWindow->getLibraryWidget());
   pLibraryBrowseDialog->exec();
 }
@@ -189,7 +189,7 @@ void BreakpointDialog::addOrEditBreakpoint()
                                                mpIgnoreCountSpinBox->value(), mpConditionTextBox->text());
     }
   } else {  /* if user has selected a class using Browse Classes button */
-    LibraryWidget *pLibraryWidget = MainWindow::instance()->getLibraryWidget();
+    LibraryWidget *pLibraryWidget = MainWindowServices::instance()->getLibraryWidget();
     LibraryTreeItem *pLibraryTreeItem = pLibraryWidget->getLibraryTreeModel()->findLibraryTreeItem(mpFileNameTextBox->text());
     if (pLibraryTreeItem) {
       if (!pLibraryTreeItem->isSaved()) {

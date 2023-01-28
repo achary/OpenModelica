@@ -49,24 +49,24 @@ void BrowseMSL::initTestCase()
 {
   QVector<QPair<QString, QString> > libraries;
   libraries.append(qMakePair(QString("Modelica"), QString("default")));
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->addModelicaLibraries(libraries);
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->addModelicaLibraries(libraries);
 }
 
 void BrowseMSL::electricalAnalogBasic()
 {
-  if (!Util::expandLibraryTreeItemParentHierarchy(MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem("Modelica.Electrical.Analog.Basic"))) {
+  if (!Util::expandLibraryTreeItemParentHierarchy(MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem("Modelica.Electrical.Analog.Basic"))) {
     QFAIL("Expanding to Modelica.Electrical.Analog.Basic failed.");
   }
 }
 
 void BrowseMSL::mediaAir()
 {
-  if (!Util::expandLibraryTreeItemParentHierarchy(MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem("Modelica.Media.Air"))) {
+  if (!Util::expandLibraryTreeItemParentHierarchy(MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem("Modelica.Media.Air"))) {
     QFAIL("Expanding to Modelica.Media.Air failed.");
   }
 }
 
 void BrowseMSL::cleanupTestCase()
 {
-  MainWindow::instance()->close();
+  MainWindowServices::instance()->close();
 }

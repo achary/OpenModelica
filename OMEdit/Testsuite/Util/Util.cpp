@@ -38,12 +38,12 @@
 bool Util::expandLibraryTreeItemParentHierarchy(const LibraryTreeItem *pLibraryTreeItem)
 {
   if (pLibraryTreeItem) {
-    if (pLibraryTreeItem->parent() != MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem()) {
+    if (pLibraryTreeItem->parent() != MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem()) {
       expandLibraryTreeItemParentHierarchy(pLibraryTreeItem->parent());
     }
-    QModelIndex modelIndex = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->libraryTreeItemIndex(pLibraryTreeItem);
-    QModelIndex proxyIndex = MainWindow::instance()->getLibraryWidget()->getLibraryTreeProxyModel()->mapFromSource(modelIndex);
-    MainWindow::instance()->getLibraryWidget()->getLibraryTreeView()->expand(proxyIndex);
+    QModelIndex modelIndex = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->libraryTreeItemIndex(pLibraryTreeItem);
+    QModelIndex proxyIndex = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeProxyModel()->mapFromSource(modelIndex);
+    MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeView()->expand(proxyIndex);
     return true;
   } else {
     return false;

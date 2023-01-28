@@ -72,7 +72,7 @@ QString GitCommands::getGitStdout(const QString &fileName, const QStringList &ar
 void GitCommands::logCurrentFile(QString currentFile)
 {
   QString output = getGitStdout(
-    MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
+    MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
     QStringList() << "log" << currentFile
   );
   QStringList lines = output.split("\n");
@@ -90,7 +90,7 @@ void GitCommands::logCurrentFile(QString currentFile)
 void GitCommands::stageCurrentFileForCommit(QString currentFile)
 {
   getGitStdout(
-        MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
+        MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
         QStringList() << "add" << currentFile
   );
 }
@@ -102,7 +102,7 @@ void GitCommands::stageCurrentFileForCommit(QString currentFile)
 void GitCommands::unstageCurrentFileFromCommit(QString currentFile)
 {
   getGitStdout(
-        MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
+        MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
         QStringList() << "reset" << "HEAD" << "--"<< currentFile
   );
 }
@@ -115,7 +115,7 @@ void GitCommands::unstageCurrentFileFromCommit(QString currentFile)
 void GitCommands::cleanWorkingDirectory()
 {
   getGitStdout(
-        MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
+        MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName(),
         QStringList() << "clean" <<"-f"
   );
 }

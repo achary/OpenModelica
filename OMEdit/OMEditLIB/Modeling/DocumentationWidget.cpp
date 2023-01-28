@@ -436,7 +436,7 @@ void DocumentationWidget::showDocumentation(LibraryTreeItem *pLibraryTreeItem)
     setScrollPosition(QPoint(0, 0));
   }
   // read documentation
-  QString documentation = MainWindow::instance()->getOMCProxy()->getDocumentationAnnotation(pLibraryTreeItem);
+  QString documentation = MainWindowServices::instance()->getOMCProxy()->getDocumentationAnnotation(pLibraryTreeItem);
   writeDocumentationFile(documentation);
   mpDocumentationViewer->setUrl(QUrl::fromLocalFile(mDocumentationFile.fileName()));
 
@@ -633,7 +633,7 @@ void DocumentationWidget::updateDocumentationHistory(LibraryTreeItem *pLibraryTr
       updatePreviousNextButtons();
       if (mDocumentationHistoryPos > -1) {
         cancelDocumentation();
-        LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+        LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
         pLibraryTreeModel->showModelWidget(mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem);
       } else {
         mpEditInfoAction->setDisabled(true);
@@ -661,7 +661,7 @@ void DocumentationWidget::previousDocumentation()
     saveScrollPosition();
     mDocumentationHistoryPos--;
     setExecutingPreviousNextButtons(true);
-    LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+    LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
     pLibraryTreeModel->showModelWidget(mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem);
     setExecutingPreviousNextButtons(false);
   }
@@ -678,7 +678,7 @@ void DocumentationWidget::nextDocumentation()
     saveScrollPosition();
     mDocumentationHistoryPos++;
     setExecutingPreviousNextButtons(true);
-    LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+    LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
     pLibraryTreeModel->showModelWidget(mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem);
     setExecutingPreviousNextButtons(false);
   }
@@ -695,7 +695,7 @@ void DocumentationWidget::editInfoDocumentation()
     LibraryTreeItem *pLibraryTreeItem = mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem;
     if (pLibraryTreeItem && !pLibraryTreeItem->isNonExisting()) {
       // get the info documentation
-      QList<QString> info = MainWindow::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
+      QList<QString> info = MainWindowServices::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
       writeDocumentationFile(info.at(0));
       mpHTMLEditor->setUrl(QUrl::fromLocalFile(mDocumentationFile.fileName()));
       // put the info documentation in the source editor
@@ -730,7 +730,7 @@ void DocumentationWidget::editRevisionsDocumentation()
     LibraryTreeItem *pLibraryTreeItem = mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem;
     if (pLibraryTreeItem && !pLibraryTreeItem->isNonExisting()) {
       // get the revision documentation
-      QList<QString> revisions = MainWindow::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
+      QList<QString> revisions = MainWindowServices::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
       writeDocumentationFile(revisions.at(1));
       mpHTMLEditor->setUrl(QUrl::fromLocalFile(mDocumentationFile.fileName()));
       // put the info documentation in the source editor
@@ -765,7 +765,7 @@ void DocumentationWidget::editInfoHeaderDocumentation()
     LibraryTreeItem *pLibraryTreeItem = mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem;
     if (pLibraryTreeItem && !pLibraryTreeItem->isNonExisting()) {
       // get the __OpenModelica_infoHeader documentation annotation
-      QList<QString> infoHeader = MainWindow::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
+      QList<QString> infoHeader = MainWindowServices::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
       writeDocumentationFile(infoHeader.at(2));
       mpHTMLEditor->setUrl(QUrl::fromLocalFile(mDocumentationFile.fileName()));
       // put the info documentation in the source editor
@@ -801,7 +801,7 @@ void DocumentationWidget::saveDocumentation(LibraryTreeItem *pNextLibraryTreeIte
   if (mDocumentationHistoryPos >= 0) {
     LibraryTreeItem *pLibraryTreeItem = mpDocumentationHistoryList->at(mDocumentationHistoryPos).mpLibraryTreeItem;
     if (pLibraryTreeItem && !pLibraryTreeItem->isNonExisting()) {
-      QList<QString> documentation = MainWindow::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
+      QList<QString> documentation = MainWindowServices::instance()->getOMCProxy()->getDocumentationAnnotationInClass(pLibraryTreeItem);
       // old documentation annotation
       QList<QString> oldDocAnnotationList;
       if (!documentation.at(0).isEmpty()) {
@@ -856,12 +856,12 @@ void DocumentationWidget::saveDocumentation(LibraryTreeItem *pNextLibraryTreeIte
         pLibraryTreeItem->getModelWidget()->updateModelText();
       } else {
         // send the documentation annotation to OMC
-        MainWindow::instance()->getOMCProxy()->addClassAnnotation(pLibraryTreeItem->getNameStructure(), newDocAnnotationString);
-        LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+        MainWindowServices::instance()->getOMCProxy()->addClassAnnotation(pLibraryTreeItem->getNameStructure(), newDocAnnotationString);
+        LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
         pLibraryTreeModel->updateLibraryTreeItemClassText(pLibraryTreeItem);
       }
       /* ticket:5190 Save the class when documentation save button is hit. */
-      MainWindow::instance()->getLibraryWidget()->saveLibraryTreeItem(pLibraryTreeItem);
+      MainWindowServices::instance()->getLibraryWidget()->saveLibraryTreeItem(pLibraryTreeItem);
       mEditType = EditType::None;
       showDocumentation(pNextLibraryTreeItem ? pNextLibraryTreeItem : pLibraryTreeItem);
     }
@@ -1230,13 +1230,13 @@ void DocumentationViewer::processLinkClick(QUrl url)
     QString resourceLink = url.toString().mid(12);
     /* if the link is a resource e.g .html, .txt or .pdf */
     if (resourceLink.endsWith(".html") || resourceLink.endsWith(".txt") || resourceLink.endsWith(".pdf")) {
-      QString resourceAbsoluteFileName = MainWindow::instance()->getOMCProxy()->uriToFilename("modelica://" + resourceLink);
+      QString resourceAbsoluteFileName = MainWindowServices::instance()->getOMCProxy()->uriToFilename("modelica://" + resourceLink);
       QDesktopServices::openUrl("file:///" + resourceAbsoluteFileName);
     } else {
-      LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(resourceLink);
+      LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(resourceLink);
       // send the new className to DocumentationWidget
       if (pLibraryTreeItem) {
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pLibraryTreeItem);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pLibraryTreeItem);
       }
     }
   } else { // if it is normal http request then check if its not redirected to https
@@ -1278,9 +1278,9 @@ void DocumentationViewer::processLinkHover(QString link, QString title, QString 
   Q_UNUSED(title);
   Q_UNUSED(textContent);
   if (link.isEmpty()) {
-    MainWindow::instance()->getStatusBar()->clearMessage();
+    MainWindowServices::instance()->getStatusBar()->clearMessage();
   } else {
-    MainWindow::instance()->getStatusBar()->showMessage(link);
+    MainWindowServices::instance()->getStatusBar()->showMessage(link);
   }
 }
 

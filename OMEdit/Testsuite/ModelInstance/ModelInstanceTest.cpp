@@ -47,12 +47,12 @@ OMEDITTEST_MAIN(ModelInstanceTest)
 
 void ModelInstanceTest::initTestCase()
 {
-  MainWindow::instance()->getLibraryWidget()->openFile(QFINDTESTDATA(mFileName));
-  if (!MainWindow::instance()->getOMCProxy()->existClass(mPackageName)) {
+  MainWindowServices::instance()->getLibraryWidget()->openFile(QFINDTESTDATA(mFileName));
+  if (!MainWindowServices::instance()->getOMCProxy()->existClass(mPackageName)) {
     QFAIL(QString("Failed to load file %1").arg(mFileName).toStdString().c_str());
   }
 
-  mpModelInstance = new ModelInstance::Model(MainWindow::instance()->getOMCProxy()->getModelInstance(mModelName));
+  mpModelInstance = new ModelInstance::Model(MainWindowServices::instance()->getOMCProxy()->getModelInstance(mModelName));
 }
 
 void ModelInstanceTest::classAnnotations()
@@ -92,5 +92,5 @@ void ModelInstanceTest::cleanupTestCase()
   if (mpModelInstance) {
     delete mpModelInstance;
   }
-  MainWindow::instance()->close();
+  MainWindowServices::instance()->close();
 }

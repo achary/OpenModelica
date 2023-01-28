@@ -152,7 +152,7 @@ inline std::string extractCADFilename(const std::string& s)
 {
   QString str(s.c_str());
   if (str.startsWith("modelica://")) {
-    const QString absoluteFileName = MainWindow::instance()->getOMCProxy()->uriToFilename(str);
+    const QString absoluteFileName = MainWindowServices::instance()->getOMCProxy()->uriToFilename(str);
     return absoluteFileName.toStdString();
   } else {
     std::string fileKey = "file://";

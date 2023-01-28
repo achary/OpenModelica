@@ -164,17 +164,17 @@ void ImportFMUDialog::importFMU()
     if (!QDir().exists(outputDirectory)) {
       QDir().mkpath(outputDirectory);
     }
-    MainWindow::instance()->mFMUDirectoriesList.append(outputDirectory);
+    MainWindowServices::instance()->mFMUDirectoriesList.append(outputDirectory);
   } else {
     outputDirectory = mpOutputDirectoryTextBox->text();
   }
-  QString fmuFileName = MainWindow::instance()->getOMCProxy()->importFMU(mpFmuFileTextBox->text(), outputDirectory,
+  QString fmuFileName = MainWindowServices::instance()->getOMCProxy()->importFMU(mpFmuFileTextBox->text(), outputDirectory,
                                                                          mpLogLevelComboBox->itemData(mpLogLevelComboBox->currentIndex()).toInt(),
                                                                          mpDebugLoggingCheckBox->isChecked(),
                                                                          mpGenerateIntputConnectors->isChecked(),
                                                                          mpGenerateOutputConnectors->isChecked());
   if (!fmuFileName.isEmpty()) {
-    MainWindow::instance()->getLibraryWidget()->openFile(fmuFileName);
+    MainWindowServices::instance()->getLibraryWidget()->openFile(fmuFileName);
   }
   // trace import modeldescription
   if (OptionsDialog::instance()->getTraceabilityPage()->getTraceabilityGroupBox()->isChecked() && !fmuFileName.isEmpty()) {
@@ -182,7 +182,7 @@ void ImportFMUDialog::importFMU()
     // Get the name of the file without the extension
     QString base_name = file.baseName();
     // Push traceability information automaticaly to Daemon
-    MainWindow::instance()->getCommitChangesDialog()->generateTraceabilityURI("fmuImport", fmuFileName, base_name, mpFmuFileTextBox->text());
+    MainWindowServices::instance()->getCommitChangesDialog()->generateTraceabilityURI("fmuImport", fmuFileName, base_name, mpFmuFileTextBox->text());
   }
   accept();
 }

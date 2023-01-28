@@ -1661,7 +1661,7 @@ void Element::createClassElements()
   } else {
     if (!mpLibraryTreeItem->isNonExisting()) {
       if (!mpLibraryTreeItem->getModelWidget()) {
-        MainWindow *pMainWindow = MainWindow::instance();
+        MainWindowServices *pMainWindow = MainWindowServices::instance();
         pMainWindow->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
       }
       mpLibraryTreeItem->getModelWidget()->loadElements();
@@ -1898,7 +1898,7 @@ QString Element::getParameterDisplayString(QString parameterName)
    * 3. Find the value in extends classes and check if the value is present in extends modifier.
    * 4. If there is no extends modifier then finally check if value is present in extends classes.
    */
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   QString className = mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure();
   QString displayString = "";
   QString typeName = "";
@@ -1977,7 +1977,7 @@ QString Element::getParameterModifierValue(const QString &parameterName, const Q
   if (mpGraphicsView->getModelWidget()->isNewApi()) {
     modifierValue = mpModelElement->getModifierValueFromType(QStringList() << parameterName << modifier);
   } else {
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QString className = mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure();
     QString parameterAndModiferName = QString("%1.%2").arg(parameterName).arg(modifier);
     QMap<QString, QString> modifiers = mpElementInfo->getModifiersMap(pOMCProxy, className, this);
@@ -2005,7 +2005,7 @@ QString Element::getDerivedClassModifierValue(QString modifierName)
    * If no unit is found then check it in the derived class modifier value.
    * A derived class can be inherited, so look recursively.
    */
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   QString className;
   if (mpReferenceElement) {
     className = mpReferenceElement->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
@@ -2017,7 +2017,7 @@ QString Element::getDerivedClassModifierValue(QString modifierName)
     if (!pOMCProxy->isBuiltinType(mpElementInfo->getClassName())) {
       if (mpLibraryTreeItem) {
         if (!mpLibraryTreeItem->getModelWidget()) {
-          MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
+          MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
         }
         modifierValue = mpLibraryTreeItem->getModelWidget()->getDerivedClassModifiersMap().value(modifierName);
       }
@@ -2038,7 +2038,7 @@ QString Element::getDerivedClassModifierValue(QString modifierName)
  */
 QString Element::getInheritedDerivedClassModifierValue(Element *pElement, QString modifierName)
 {
-  MainWindow *pMainWindow = MainWindow::instance();
+  MainWindowServices *pMainWindow = MainWindowServices::instance();
   OMCProxy *pOMCProxy = pMainWindow->getOMCProxy();
   QString modifierValue = "";
   if (!pElement->getLibraryTreeItem()->getModelWidget()) {
@@ -2473,7 +2473,7 @@ void Element::drawOMSElement()
 {
   if (mpLibraryTreeItem->isSystemElement() || mpLibraryTreeItem->isComponentElement()) {
     if (!mpLibraryTreeItem->getModelWidget()) {
-      MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
+      MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
     }
     // draw shapes first
     createClassShapes();
@@ -2667,7 +2667,7 @@ void Element::createClassInheritedElements()
   } else {
     if (!mpLibraryTreeItem->isNonExisting()) {
       if (!mpLibraryTreeItem->getModelWidget()) {
-        MainWindow *pMainWindow = MainWindow::instance();
+        MainWindowServices *pMainWindow = MainWindowServices::instance();
         pMainWindow->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
       }
       foreach (LibraryTreeItem *pLibraryTreeItem, mpLibraryTreeItem->getModelWidget()->getInheritedClassesList()) {
@@ -2716,7 +2716,7 @@ void Element::createClassShapes()
     if (mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getLibraryType() == LibraryTreeItem::Modelica) {
       if (!mpLibraryTreeItem->isNonExisting()) {
         if (!mpLibraryTreeItem->getModelWidget()) {
-          MainWindow *pMainWindow = MainWindow::instance();
+          MainWindowServices *pMainWindow = MainWindowServices::instance();
           pMainWindow->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
         }
         GraphicsView *pGraphicsView = mpLibraryTreeItem->getModelWidget()->getIconGraphicsView();
@@ -3003,12 +3003,12 @@ QString Element::getParameterDisplayStringFromExtendsParameters(QString paramete
     foreach (Element *pInheritedElement, mInheritedElementsList) {
       if (pInheritedElement->getLibraryTreeItem()) {
         if (!pInheritedElement->getLibraryTreeItem()->getModelWidget()) {
-          MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pInheritedElement->getLibraryTreeItem(), false);
+          MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pInheritedElement->getLibraryTreeItem(), false);
         }
         pInheritedElement->getLibraryTreeItem()->getModelWidget()->loadDiagramView();
         foreach (Element *pElement, pInheritedElement->getLibraryTreeItem()->getModelWidget()->getDiagramGraphicsView()->getElementsList()) {
           if (pElement->getElementInfo()->getName().compare(parameterName) == 0) {
-            OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+            OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
             /* Ticket:4204
              * Look for the parameter value in the parameter containing class not in the parameter class.
              */
@@ -3088,7 +3088,7 @@ void Element::updateToolTip()
 {
   if (mpGraphicsView->getModelWidget()->isNewApi()) {
     QString comment = mpModelElement->getComment().replace("\\\"", "\"");
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     comment = pOMCProxy->makeDocumentationUriToFileName(comment);
     // since tooltips can't handle file:// scheme so we have to remove it in order to display images and make links work.
   #if defined(_WIN32)
@@ -3109,7 +3109,7 @@ void Element::updateToolTip()
       setToolTip(mpLibraryTreeItem->getTooltip());
     } else {
       QString comment = mpElementInfo->getComment().replace("\\\"", "\"");
-      OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+      OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
       comment = pOMCProxy->makeDocumentationUriToFileName(comment);
       // since tooltips can't handle file:// scheme so we have to remove it in order to display images and make links work.
     #if defined(_WIN32)
@@ -3208,7 +3208,7 @@ void Element::updatePlacementAnnotation()
       mpGraphicsView->getModelWidget()->getLibraryTreeItem()->handleIconUpdated();
     }
   } else {
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     pOMCProxy->updateComponent(getName(), getClassName(), mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), getPlacementAnnotation());
   }
   /* When something is changed in the icon layer then update the LibraryTreeItem in the Library Browser */
@@ -3582,7 +3582,7 @@ void Element::duplicate()
   }
   QPointF gridStep(mpGraphicsView->mMergedCoOrdinateSystem.getHorizontalGridStep() * 5, mpGraphicsView->mMergedCoOrdinateSystem.getVerticalGridStep() * 5);
   // add component
-  mpElementInfo->getModifiersMap(MainWindow::instance()->getOMCProxy(), mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), this);
+  mpElementInfo->getModifiersMap(MainWindowServices::instance()->getOMCProxy(), mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), this);
   ElementInfo *pElementInfo = new ElementInfo(mpElementInfo);
   pElementInfo->setName(name);
   pElementInfo->applyDefaultPrefixes(defaultPrefix);
@@ -3826,7 +3826,7 @@ void Element::moveCtrlRight()
  */
 void Element::showParameters()
 {
-  MainWindow *pMainWindow = MainWindow::instance();
+  MainWindowServices *pMainWindow = MainWindowServices::instance();
   if (mpGraphicsView->getModelWidget()->isNewApi()) {
     pMainWindow->getStatusBar()->showMessage(tr("Opening %1 %2 parameters window").arg(mpModel->getName()).arg(getName()));
   } else {
@@ -3834,7 +3834,7 @@ void Element::showParameters()
       return;
     }
     if (!mpLibraryTreeItem || mpLibraryTreeItem->isNonExisting()) {
-      QMessageBox::critical(pMainWindow, QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
+      QMessageBox::critical(pMainWindow->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
                             tr("Cannot show parameters window for component <b>%1</b>. Did not find type <b>%2</b>.").arg(getName())
                             .arg(mpElementInfo->getClassName()), Helper::ok);
       return;
@@ -3843,7 +3843,7 @@ void Element::showParameters()
   }
   pMainWindow->getProgressBar()->setRange(0, 0);
   pMainWindow->showProgressBar();
-  ElementParameters *pElementParameters = new ElementParameters(this, pMainWindow);
+  ElementParameters *pElementParameters = new ElementParameters(this, pMainWindow->mainWindowWidget());
   pMainWindow->hideProgressBar();
   pMainWindow->getStatusBar()->clearMessage();
   pElementParameters->exec();
@@ -3856,7 +3856,7 @@ void Element::showParameters()
  */
 void Element::showAttributes()
 {
-  MainWindow *pMainWindow = MainWindow::instance();
+  MainWindowServices *pMainWindow = MainWindowServices::instance();
   if (mpGraphicsView->getModelWidget()->isNewApi()) {
     pMainWindow->getStatusBar()->showMessage(tr("Opening %1 %2 attributes window").arg(mpModel->getName()).arg(getName()));
   } else {
@@ -3864,7 +3864,7 @@ void Element::showAttributes()
   }
   pMainWindow->getProgressBar()->setRange(0, 0);
   pMainWindow->showProgressBar();
-  ElementAttributes *pElementAttributes = new ElementAttributes(this, pMainWindow);
+  ElementAttributes *pElementAttributes = new ElementAttributes(this, pMainWindow->mainWindowWidget());
   pMainWindow->hideProgressBar();
   pMainWindow->getStatusBar()->clearMessage();
   pElementAttributes->exec();
@@ -3872,7 +3872,7 @@ void Element::showAttributes()
 
 void Element::fetchInterfaceData()
 {
-  MainWindow::instance()->fetchInterfaceData(mpGraphicsView->getModelWidget()->getLibraryTreeItem(), this->getName());
+  MainWindowServices::instance()->fetchInterfaceData(mpGraphicsView->getModelWidget()->getLibraryTreeItem(), this->getName());
 }
 
 /*!
@@ -3881,7 +3881,7 @@ void Element::fetchInterfaceData()
  */
 void Element::openClass()
 {
-  MainWindow::instance()->getLibraryWidget()->openLibraryTreeItem(getClassName());
+  MainWindowServices::instance()->getLibraryWidget()->openLibraryTreeItem(getClassName());
 }
 
 /*!
@@ -3890,7 +3890,7 @@ void Element::openClass()
  */
 void Element::showSubModelAttributes()
 {
-  CompositeModelSubModelAttributes *pCompositeModelSubModelAttributes = new CompositeModelSubModelAttributes(this, MainWindow::instance());
+  CompositeModelSubModelAttributes *pCompositeModelSubModelAttributes = new CompositeModelSubModelAttributes(this, MainWindowServices::instance()->mainWindowWidget());
   pCompositeModelSubModelAttributes->exec();
 }
 
@@ -3902,7 +3902,7 @@ void Element::showElementPropertiesDialog()
 {
   if (mpLibraryTreeItem && mpLibraryTreeItem->getLibraryType() == LibraryTreeItem::OMS
       && (mpLibraryTreeItem->isSystemElement() || mpLibraryTreeItem->isComponentElement())) {
-    ElementPropertiesDialog *pElementPropertiesDialog = new ElementPropertiesDialog(this, MainWindow::instance());
+    ElementPropertiesDialog *pElementPropertiesDialog = new ElementPropertiesDialog(this, MainWindowServices::instance()->mainWindowWidget());
     pElementPropertiesDialog->exec();
   }
 }
@@ -3916,7 +3916,7 @@ void Element::updateDynamicSelect(double time)
 {
   // state machine debugging
   if ((mpGraphicsView->getModelWidget()->isNewApi() && mpModel && mpModel->isState()) || (mpLibraryTreeItem && mpLibraryTreeItem->isState())) {
-    double value = MainWindow::instance()->getVariablesWidget()->readVariableValue(getName() + ".active", time);
+    double value = MainWindowServices::instance()->getVariablesWidget()->readVariableValue(getName() + ".active", time);
     setActiveState(value);
     foreach (LineAnnotation *pTransitionLineAnnotation, mpGraphicsView->getTransitionsList()) {
       if (pTransitionLineAnnotation->getEndElement()->getName().compare(getName()) == 0) {
@@ -4014,7 +4014,7 @@ QVariant Element::itemChange(GraphicsItemChange change, const QVariant &value)
 #if !defined(WITHOUT_OSG)
     // if subModel selection is changed in CompositeModel
     if (mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getLibraryType() == LibraryTreeItem::CompositeModel) {
-      MainWindow::instance()->getModelWidgetContainer()->updateThreeDViewer(mpGraphicsView->getModelWidget());
+      MainWindowServices::instance()->getModelWidgetContainer()->updateThreeDViewer(mpGraphicsView->getModelWidget());
     }
 #endif
   } else if (change == QGraphicsItem::ItemPositionHasChanged) {

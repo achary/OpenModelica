@@ -228,7 +228,7 @@ void LocalsTreeItem::retrieveModelicaMetaType()
   if (getDisplayType().isEmpty() || (getDisplayType().compare(Helper::VALUE_OPTIMIZED_OUT) == 0)
       || (getDisplayType().compare(Helper::REPLACEABLE_TYPE_ANY) == 0)) {
     GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-    StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+    StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
     if (parent() && parent()->getModelicaValue() && qobject_cast<ModelicaRecordValue*>(parent()->getModelicaValue())) {
       pGDBAdapter->postCommand(CommandFactory::getTypeOfAny(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                             getName(), true),
@@ -250,7 +250,7 @@ void LocalsTreeItem::retrieveModelicaMetaType()
 void LocalsTreeItem::retrieveValue()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-  StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+  StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
   if (isCoreTypeExceptString()) {
     pGDBAdapter->postCommand(CommandFactory::dataEvaluateExpression(pStackFramesWidget->getSelectedThread(),
                                                                     pStackFramesWidget->getSelectedFrame(), getName()),

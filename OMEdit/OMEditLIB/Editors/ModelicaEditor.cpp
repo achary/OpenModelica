@@ -224,7 +224,7 @@ void ModelicaEditor::getCompletionSymbols(QString word, QList<CompleterItem> &cl
  */
 LibraryTreeItem *ModelicaEditor::getAnnotationCompletionRoot()
 {
-  LibraryTreeItem *pLibraryRoot = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem();
+  LibraryTreeItem *pLibraryRoot = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem();
   LibraryTreeItem *pModelicaReference = 0;
 
   for (int i = 0; i < pLibraryRoot->childrenSize(); ++i) {
@@ -257,7 +257,7 @@ void ModelicaEditor::getCompletionAnnotations(const QStringList &stack, QList<Co
       QList<ElementInfo *> components = pAnnotation->getComponentsList();
       for (int i = 0; i < components.size(); ++i) {
         QString componentName = components[i]->getName();
-        QString componentValue = components[i]->getParameterValue(MainWindow::instance()->getOMCProxy(), pAnnotation->getNameStructure());
+        QString componentValue = components[i]->getParameterValue(MainWindowServices::instance()->getOMCProxy(), pAnnotation->getNameStructure());
         annotations << CompleterItem(componentName, QString("%1 = %2").arg(componentName, componentValue), componentName,
                                      components[i]->getHTMLDescription());
       }
@@ -334,7 +334,7 @@ bool ModelicaEditor::getCompletionAnnotations(const QString &str, QList<Complete
  */
 QStringList ModelicaEditor::getClassNames(QString *errorString)
 {
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   QStringList classNames;
   LibraryTreeItem *pLibraryTreeItem = mpModelWidget->getLibraryTreeItem();
   if (mpPlainTextEdit->toPlainText().isEmpty()) {
@@ -372,7 +372,7 @@ QStringList ModelicaEditor::getClassNames(QString *errorString)
   // check if the class already exists
   foreach(QString className, classNames) {
     if (pLibraryTreeItem->getNameStructure().compare(className) != 0) {
-      if (MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(className)) {
+      if (MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(className)) {
         existingmodelsList.append(className);
         existModel = true;
       }
@@ -406,7 +406,7 @@ bool ModelicaEditor::validateText(LibraryTreeItem **pLibraryTreeItem)
       if (answer < 0 || OptionsDialog::instance()->getNotificationsPage()->getAlwaysAskForTextEditorErrorCheckBox()->isChecked()) {
         NotificationsDialog *pNotificationsDialog = new NotificationsDialog(NotificationsDialog::RevertPreviousOrFixErrorsManually,
                                                                             NotificationsDialog::CriticalIcon,
-                                                                            MainWindow::instance());
+                                                                            MainWindowServices::instance()->mainWindowWidget());
         pNotificationsDialog->setNotificationLabelString(GUIMessages::getMessage(GUIMessages::ERROR_IN_TEXT).arg("Modelica")
                                                          .append(GUIMessages::getMessage(GUIMessages::CHECK_MESSAGES_BROWSER))
                                                          .append(GUIMessages::getMessage(GUIMessages::REVERT_PREVIOUS_OR_FIX_ERRORS_MANUALLY)));

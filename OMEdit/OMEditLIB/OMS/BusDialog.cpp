@@ -1389,7 +1389,7 @@ BusConnectionDialog::BusConnectionDialog(GraphicsView *pGraphicsView, LineAnnota
   oms_busconnector_t *pStartBus = pStartLibraryTreeItem->getOMSBusConnector();
   QStringList startBusInputConnectors, startBusOutputConnectors;
   if (pStartBus && pStartBus->connectors) {
-    LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+    LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
     LibraryTreeItem *pParentLibraryTreeItem = pStartLibraryTreeItem->parent();
     for (int i = 0; pStartBus->connectors[i] ; ++i) {
       LibraryTreeItem *pLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItem(QString("%1.%2")
@@ -1416,7 +1416,7 @@ BusConnectionDialog::BusConnectionDialog(GraphicsView *pGraphicsView, LineAnnota
   oms_busconnector_t *pEndBus = pEndLibraryTreeItem->getOMSBusConnector();
   QStringList endBusInputConnectors, endBusOutputConnectors;
   if (pEndBus && pEndBus->connectors) {
-    LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+    LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
     LibraryTreeItem *pParentLibraryTreeItem = pEndLibraryTreeItem->parent();
     for (int i = 0; pEndBus->connectors[i] ; ++i) {
       LibraryTreeItem *pLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItem(QString("%1.%2")

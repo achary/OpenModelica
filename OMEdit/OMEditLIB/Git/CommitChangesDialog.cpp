@@ -32,7 +32,7 @@ CommitChangesDialog::CommitChangesDialog(QWidget *pParent)
   setWindowTitle(QString(Helper::applicationName).append(" - ").append(tr("Commit")));
   setAttribute(Qt::WA_DeleteOnClose);
   resize(850, 600);
-  QString repository = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString repository = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   // repository information
   mpRepositoryLabel = new Label(tr("Repository:"));
   mpRepositoryNameTextBox = new QLineEdit;
@@ -116,7 +116,7 @@ CommitChangesDialog::CommitChangesDialog(QWidget *pParent)
 
 void CommitChangesDialog::getChangedFiles()
 {
-  QString fileName = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString fileName = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
 
   mpModifiedFiles = GitCommands::instance()->getChangedFiles(fileName);
 
@@ -202,8 +202,8 @@ void CommitChangesDialog::commitDescriptionTextChanged()
 
 void CommitChangesDialog::commitFiles()
 {
-  QString filePath = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
-  QString nameStructure = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getNameStructure();
+  QString filePath = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString nameStructure = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getNameStructure();
   QFileInfo info(filePath);
   GitCommands::instance()->commitFiles(filePath, mpCommitDescriptionTextBox->toPlainText());
   foreach (const QString &fileName, mpModifiedFiles) {
@@ -241,10 +241,10 @@ void CommitChangesDialog::generateTraceabilityURI(QString activity, QString mode
     fmuFileNameURI = "Entity.fmu:" + path + "#" + gitHash;
     sourceModelFileNameURI = "Entity.modelFile:" + dir.relativeFilePath(modelFileName) + "#" + GitCommands::instance()->getGitHash(modelFileName);
   }
-  toolURI = "Entity.softwareTool:OpenModelica: " + MainWindow::instance()->getOMCProxy()->getVersion();
+  toolURI = "Entity.softwareTool:OpenModelica: " + MainWindowServices::instance()->getOMCProxy()->getVersion();
   agentURI = "Agent:" + OptionsDialog::instance()->getTraceabilityPage()->getEmail()->text();
   activityURI = "Activity."+ activity +":" + time.toTimeSpec(Qt::OffsetFromUTC).toString(Qt::ISODate)+ "#" + QUuid::createUuid().toString().mid(1, 36);
-  MainWindow::instance()->getTraceabilityInformationURI()->translateURIToJsonMessageFormat(activity,  toolURI,  activityURI,  agentURI,  sourceModelFileNameURI,  fmuFileNameURI, entityType, path, gitHash);
+  MainWindowServices::instance()->getTraceabilityInformationURI()->translateURIToJsonMessageFormat(activity,  toolURI,  activityURI,  agentURI,  sourceModelFileNameURI,  fmuFileNameURI, entityType, path, gitHash);
 }
 
 void CommitChangesDialog::commitAndGenerateTraceabilityURI(QString fileName)
@@ -253,13 +253,13 @@ void CommitChangesDialog::commitAndGenerateTraceabilityURI(QString fileName)
   QString activity = getFileStatus(status.mid(0, 2));
   QString commitMessage = "OpenModelica Modeling";
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 2, 0))
-   commitMessage = QInputDialog::getMultiLineText(MainWindow::instance(), tr("Commit Message "), "Please Enter Commit Description:");
+   commitMessage = QInputDialog::getMultiLineText(MainWindowServices::instance()->mainWindowWidget(), tr("Commit Message "), "Please Enter Commit Description:");
 #else // Qt4
 #endif
   QString toolURI, activityURI, agentURI, sourceModelFileNameURI, fmuFileNameURI, gitHash, path;
   QDir dir(OptionsDialog::instance()->getTraceabilityPage()->getGitRepository()->text());
   QDateTime time = QDateTime::currentDateTime();
-  toolURI = "Entity.softwareTool:OpenModelica: " + MainWindow::instance()->getOMCProxy()->getVersion();
+  toolURI = "Entity.softwareTool:OpenModelica: " + MainWindowServices::instance()->getOMCProxy()->getVersion();
   agentURI = "Agent:" + OptionsDialog::instance()->getTraceabilityPage()->getEmail()->text();
   activityURI = "Activity."+ activity +":" + time.toTimeSpec(Qt::OffsetFromUTC).toString(Qt::ISODate)+ "#" + QUuid::createUuid().toString().mid(1, 36);
   path = dir.relativeFilePath(fileName);
@@ -267,12 +267,12 @@ void CommitChangesDialog::commitAndGenerateTraceabilityURI(QString fileName)
     gitHash = GitCommands::instance()->getGitHash(fileName);
     sourceModelFileNameURI = "Entity.modelFile:" + path + "#" + gitHash;
     fmuFileNameURI = "Entity.modelFile:" + path + "#" + GitCommands::instance()->commitAndGetFileHash(fileName, commitMessage);
-    MainWindow::instance()->getTraceabilityInformationURI()->translateURIToJsonMessageFormat(activity,  toolURI,  activityURI,  agentURI,  sourceModelFileNameURI,  fmuFileNameURI, "modelFile", path, gitHash);
+    MainWindowServices::instance()->getTraceabilityInformationURI()->translateURIToJsonMessageFormat(activity,  toolURI,  activityURI,  agentURI,  sourceModelFileNameURI,  fmuFileNameURI, "modelFile", path, gitHash);
   }
   else if(activity.compare("modelCreation")== 0) {
     gitHash = GitCommands::instance()->commitAndGetFileHash(fileName, commitMessage);
     sourceModelFileNameURI = "Entity.modelFile:" + path + "#" + gitHash;
-    MainWindow::instance()->getTraceabilityInformationURI()->translateModelCreationURIToJsonMessageFormat(activity,  toolURI,  activityURI,  agentURI,  sourceModelFileNameURI, "modelFile", path, gitHash);
+    MainWindowServices::instance()->getTraceabilityInformationURI()->translateModelCreationURIToJsonMessageFormat(activity,  toolURI,  activityURI,  agentURI,  sourceModelFileNameURI, "modelFile", path, gitHash);
   }
 }
 

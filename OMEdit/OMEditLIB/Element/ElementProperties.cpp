@@ -73,7 +73,7 @@ Parameter::Parameter(Element *pElement, bool showStartAttribute, QString tab, QS
   connect(mpFixedCheckBox, SIGNAL(clicked()), SLOT(showFixedMenu()));
   setFixedState("false", true);
   // set the value type based on element type.
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   if (mpElement->getElementInfo()->getClassName().compare("Boolean") == 0) {
     if (mpElement->getChoicesAnnotation().size() > 1 && /* Size should be 2. We always get choices(checkBox, __Dymola_checkBox) */
         (mpElement->getChoicesAnnotation().at(0).compare("true") == 0 || mpElement->getChoicesAnnotation().at(1).compare("true") == 0)) {
@@ -163,7 +163,7 @@ Parameter::Parameter(ModelInstance::Element *pElement, ElementParameters *pEleme
   mSaveSelectorCaption = saveSelector.getCaption();
   mGroupImage = dialogAnnotation.getGroupImage();
   if (!mGroupImage.isEmpty()) {
-    mGroupImage = MainWindow::instance()->getOMCProxy()->uriToFilename(mGroupImage);
+    mGroupImage = MainWindowServices::instance()->getOMCProxy()->uriToFilename(mGroupImage);
   }
   mConnectorSizing = dialogAnnotation.isConnectorSizing();
 
@@ -277,7 +277,7 @@ Parameter::Parameter(ModelInstance::Element *pElement, ElementParameters *pEleme
  */
 void Parameter::updateNameLabel()
 {
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     mpNameLabel->setText(mpModelInstanceElement->getName() + (mShowStartAttribute ? ".start" : ""));
   } else {
     mpNameLabel->setText(mpElement->getName() + (mShowStartAttribute ? ".start" : ""));
@@ -310,14 +310,14 @@ void Parameter::setValueWidget(QString value, bool defaultValue, QString fromUni
       qreal realValue = value.toDouble(&ok);
       // if the modifier is a literal constant
       if (ok) {
-        OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+        OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
         OMCInterface::convertUnits_res convertUnit = pOMCProxy->convertUnits(fromUnit, mpUnitComboBox->itemData(mpUnitComboBox->currentIndex()).toString());
         if (convertUnit.unitsCompatible) {
           realValue = Utilities::convertUnit(realValue, convertUnit.offset, convertUnit.scaleFactor);
           value = StringHandler::number(realValue);
         }
       } else { // if expression
-        value = Utilities::arrayExpressionUnitConversion(MainWindow::instance()->getOMCProxy(), value, fromUnit, mpUnitComboBox->itemData(mpUnitComboBox->currentIndex()).toString());
+        value = Utilities::arrayExpressionUnitConversion(MainWindowServices::instance()->getOMCProxy(), value, fromUnit, mpUnitComboBox->itemData(mpUnitComboBox->currentIndex()).toString());
       }
     }
   }
@@ -500,9 +500,9 @@ void Parameter::update()
 void Parameter::createValueWidget()
 {
   int i;
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   QString className;
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     className = mpModelInstanceElement->getType();
   } else {
     className = mpElement->getElementInfo()->getClassName();
@@ -527,7 +527,7 @@ void Parameter::createValueWidget()
       mpValueComboBox->addItem("", "");
       // add an empty item to comments list to get correct tooltip
       enumerationLiteralsComments.append("");
-      if (MainWindow::instance()->isNewApi()) {
+      if (MainWindowServices::instance()->isNewApi()) {
         foreach (auto pModelInstanceElement, mpModelInstanceElement->getModel()->getElements()) {
           enumerationLiterals.append(pModelInstanceElement->getName());
           enumerationLiteralsComments.append(pModelInstanceElement->getComment());
@@ -538,7 +538,7 @@ void Parameter::createValueWidget()
       for (i = 0 ; i < enumerationLiterals.size(); i++) {
         mpValueComboBox->addItem(enumerationLiterals[i], className + "." + enumerationLiterals[i]);
       }
-      if (MainWindow::instance()->isNewApi()) {
+      if (MainWindowServices::instance()->isNewApi()) {
         Utilities::setToolTip(mpValueComboBox, mpModelInstanceElement->getModel()->getName(), enumerationLiteralsComments);
       }
       connect(mpValueComboBox, SIGNAL(currentIndexChanged(int)), SLOT(valueComboBoxChanged(int)));
@@ -551,7 +551,7 @@ void Parameter::createValueWidget()
 
     case Parameter::ReplaceableComponent:
     case Parameter::ReplaceableClass:
-      if (MainWindow::instance()->isNewApi()) {
+      if (MainWindowServices::instance()->isNewApi()) {
         constrainedByClassName = mpModelInstanceElement->getReplaceable().getConstrainedby();
         if (constrainedByClassName.isEmpty()) {
           constrainedByClassName = mpModelInstanceElement->getType();
@@ -671,7 +671,7 @@ void Parameter::enableDisableUnitComboBox(const QString &value)
  */
 void Parameter::updateValueBinding(bool value)
 {
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     // update the binding with the new value
     mpModelInstanceElement->setBinding(FlatModelica::Expression(value));
     mpElementParameters->updateParameters();
@@ -698,7 +698,7 @@ void Parameter::fileSelectorButtonClicked()
     if (mSaveSelectorCaption.compare("-") != 0) {
       caption = mSaveSelectorCaption;
     }
-    fileName = StringHandler::getSaveFileName(MainWindow::instance(), caption, NULL, filter, NULL);
+    fileName = StringHandler::getSaveFileName(MainWindowServices::instance()->mainWindowWidget(), caption, NULL, filter, NULL);
   } else {
     filter = "";
     if (mLoadSelectorFilter.compare("-") != 0) {
@@ -708,7 +708,7 @@ void Parameter::fileSelectorButtonClicked()
     if (mLoadSelectorCaption.compare("-") != 0) {
       caption = mLoadSelectorCaption;
     }
-    fileName = StringHandler::getOpenFileName(MainWindow::instance(), caption, NULL, filter, NULL);
+    fileName = StringHandler::getOpenFileName(MainWindowServices::instance()->mainWindowWidget(), caption, NULL, filter, NULL);
   }
   // if user press ESC
   if (fileName.isEmpty()) {
@@ -1018,7 +1018,7 @@ void ElementParameters::setUpDialog()
   mpComponentClassGroupBox = new QGroupBox(tr("Class"));
   // Component class name
   mpComponentClassNameLabel = new Label(Helper::path);
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     mpComponentClassNameTextBox = new Label(mpElement->getModel()->getName());
   } else {
     mpComponentClassNameTextBox = new Label(mpElement->getElementInfo()->getClassName());
@@ -1053,7 +1053,7 @@ void ElementParameters::setUpDialog()
   pParametersScrollArea->addGroupBox(pInitializationGroupBox);
   mTabsMap.insert("General", mpParametersTabWidget->addTab(pParametersScrollArea, "General"));
   // create parameters tabs and groupboxes
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     createTabsGroupBoxesAndParameters(mpElement->getModel());
     /* We append the actual Element's parameters first so that they appear first on the list.
      * For that we use QList insert instead of append in ElementParameters::createTabsGroupBoxesAndParametersHelper() function.
@@ -1193,7 +1193,7 @@ void ElementParameters::createTabsGroupBoxesAndParameters(LibraryTreeItem *pLibr
  */
 void ElementParameters::createTabsGroupBoxesAndParametersHelper(LibraryTreeItem *pLibraryTreeItem, bool useInsert)
 {
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   foreach (LibraryTreeItem *pInheritedLibraryTreeItem, pLibraryTreeItem->getInheritedClasses()) {
     QMap<QString, QString> extendsModifiers = pLibraryTreeItem->getModelWidget()->getExtendsModifiersMap(pInheritedLibraryTreeItem->getNameStructure());
     QMap<QString, QString>::iterator extendsModifiersIterator;
@@ -1263,7 +1263,7 @@ void ElementParameters::createTabsGroupBoxesAndParametersHelper(LibraryTreeItem 
     bool isParameter = (pElement->getElementInfo()->getVariablity().compare("parameter") == 0);
     // If not a parameter then check for start and fixed bindings. See Modelica.Electrical.Analog.Basic.Resistor parameter R.
     if (!isParameter) {
-      OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+      OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
       QString className = pElement->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
       QMap<QString, QString> modifiers = pElement->getElementInfo()->getModifiersMap(pOMCProxy, className, pElement);
       QMap<QString, QString>::iterator modifiersIterator;
@@ -1304,7 +1304,7 @@ void ElementParameters::createTabsGroupBoxesAndParametersHelper(LibraryTreeItem 
       // get the group image
       groupImage = StringHandler::removeFirstLastQuotes(dialogAnnotation.at(9));
       if (!groupImage.isEmpty()) {
-        groupImage = MainWindow::instance()->getOMCProxy()->uriToFilename(groupImage);
+        groupImage = MainWindowServices::instance()->getOMCProxy()->uriToFilename(groupImage);
       }
       // get the connectorSizing
       connectorSizing = (dialogAnnotation.at(10).compare("true") == 0);
@@ -1470,7 +1470,7 @@ void ElementParameters::fetchElementExtendsModifiers(ModelInstance::Model *pMode
             if (index < 0) {
               // add extends modifier as additional display unit if compatible
               index = pParameter->getUnitComboBox()->count() - 1;
-              OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+              OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
               if (index > -1 &&
                   (pOMCProxy->convertUnits(pParameter->getUnitComboBox()->itemData(0).toString(), displayUnit)).unitsCompatible) {
                 pParameter->getUnitComboBox()->addItem(Utilities::convertUnitToSymbol(displayUnit), displayUnit);
@@ -1496,7 +1496,7 @@ void ElementParameters::fetchElementExtendsModifiers(ModelInstance::Model *pMode
 void ElementParameters::fetchElementExtendsModifiers()
 {
   if (mpElement->getReferenceElement()) {
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QString inheritedClassName;
     inheritedClassName = mpElement->getReferenceElement()->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
     QMap<QString, QString> extendsModifiersMap = mpElement->getGraphicsView()->getModelWidget()->getExtendsModifiersMap(inheritedClassName);
@@ -1562,7 +1562,7 @@ void ElementParameters::fetchElementExtendsModifiers()
  */
 void ElementParameters::fetchElementModifiers()
 {
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     foreach (auto modifier, mpElement->getModelElement()->getModifier().getModifiers()) {
       Parameter *pParameter = findParameter(modifier.getName());
       if (pParameter) {
@@ -1587,7 +1587,7 @@ void ElementParameters::fetchElementModifiers()
             if (index < 0) {
               // add modifier as additional display unit if compatible
               index = pParameter->getUnitComboBox()->count() - 1;
-              OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+              OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
               if (index > -1 &&
                   (pOMCProxy->convertUnits(pParameter->getUnitComboBox()->itemData(0).toString(), displayUnit)).unitsCompatible) {
                 pParameter->getUnitComboBox()->addItem(Utilities::convertUnitToSymbol(displayUnit), displayUnit);
@@ -1607,7 +1607,7 @@ void ElementParameters::fetchElementModifiers()
     if (mpElement->getReferenceElement()) {
       pElement = mpElement->getReferenceElement();
     }
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QString className = pElement->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
     QMap<QString, QString> modifiers = pElement->getElementInfo()->getModifiersMap(pOMCProxy, className, mpElement);
     QMap<QString, QString>::iterator modifiersIterator;
@@ -1696,7 +1696,7 @@ void ElementParameters::fetchClassExtendsModifiers()
                   if (index < 0) {
                     // add extends modifier as additional display unit if compatible
                     index = pParameter->getUnitComboBox()->count() - 1;
-                    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+                    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
                     if (index > -1 &&
                         (pOMCProxy->convertUnits(pParameter->getUnitComboBox()->itemData(0).toString(), displayUnit)).unitsCompatible) {
                       pParameter->getUnitComboBox()->addItem(Utilities::convertUnitToSymbol(displayUnit), displayUnit);
@@ -1750,7 +1750,7 @@ Parameter* ElementParameters::findParameter(LibraryTreeItem *pLibraryTreeItem, c
 Parameter* ElementParameters::findParameter(const QString &parameter, Qt::CaseSensitivity caseSensitivity) const
 {
   foreach (Parameter *pParameter, mParametersList) {
-    if (MainWindow::instance()->isNewApi()) {
+    if (MainWindowServices::instance()->isNewApi()) {
       if (pParameter->getModelInstanceElement()->getName().compare(parameter, caseSensitivity) == 0) {
         return pParameter;
       }
@@ -1768,9 +1768,9 @@ void ElementParameters::commentLinkClicked(QString link)
   QUrl linkUrl(link);
   if (linkUrl.scheme().compare("modelica") == 0) {
     link = link.remove("modelica://");
-    LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(link);
+    LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(link);
     if (pLibraryTreeItem) {
-      MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pLibraryTreeItem);
+      MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pLibraryTreeItem);
     }
   } else {
     QDesktopServices::openUrl(link);
@@ -1784,11 +1784,11 @@ void ElementParameters::commentLinkClicked(QString link)
  */
 void ElementParameters::updateElementParameters()
 {
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     ModelWidget *pModelWidget = mpElement->getGraphicsView()->getModelWidget();
     ModelInfo oldModelInfo = pModelWidget->createModelInfo();
     QString className = pModelWidget->getLibraryTreeItem()->getNameStructure();
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     bool valueChanged = false;
     QMap<QString, QString> elementModifiersMap;
     // any parameter changed
@@ -1879,7 +1879,7 @@ void ElementParameters::updateElementParameters()
       pModelWidget->updateModelText();
     }
   } else {
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QString className = mpElement->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
     bool valueChanged = false;
     // save the Element modifiers
@@ -2124,7 +2124,7 @@ void ElementAttributes::setUpDialog()
  */
 void ElementAttributes::initializeDialog()
 {
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     // get Class Name
     mpNameTextBox->setText(mpElement->getModelElement()->getName());
     mpNameTextBox->setCursorPosition(0);
@@ -2215,29 +2215,29 @@ void ElementAttributes::updateElementAttributes()
   /* Check the same element name problem before setting any attributes. */
   if (mpElement->getName().compare(mpNameTextBox->text()) != 0) {
     if (!mpElement->getGraphicsView()->checkElementName(mpElement->getClassName(), mpNameTextBox->text())) {
-      QMessageBox::information(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::information),
+      QMessageBox::information(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::information),
                                GUIMessages::getMessage(GUIMessages::SAME_COMPONENT_NAME).arg(mpNameTextBox->text()), Helper::ok);
       return;
     }
   }
   // check for spaces
   if (StringHandler::containsSpace(mpNameTextBox->text())) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
                           tr("A component name should not have spaces. Please choose another name."), Helper::ok);
     return;
   }
   // check for comma
   if (mpNameTextBox->text().contains(',')) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
                           GUIMessages::getMessage(GUIMessages::INVALID_INSTANCE_NAME).arg(mpNameTextBox->text()), Helper::ok);
     return;
   }
   // check for invalid names
-  MainWindow::instance()->getOMCProxy()->setLoggingEnabled(false);
-  QList<QString> result = MainWindow::instance()->getOMCProxy()->parseString(QString("model M N %1; end M;").arg(mpNameTextBox->text()), "M", false);
-  MainWindow::instance()->getOMCProxy()->setLoggingEnabled(true);
+  MainWindowServices::instance()->getOMCProxy()->setLoggingEnabled(false);
+  QList<QString> result = MainWindowServices::instance()->getOMCProxy()->parseString(QString("model M N %1; end M;").arg(mpNameTextBox->text()), "M", false);
+  MainWindowServices::instance()->getOMCProxy()->setLoggingEnabled(true);
   if (result.isEmpty()) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
                           GUIMessages::getMessage(GUIMessages::INVALID_INSTANCE_NAME).arg(mpNameTextBox->text()), Helper::ok);
     return;
   }
@@ -2259,9 +2259,9 @@ void ElementAttributes::updateElementAttributes()
   } else {
     causality = "";
   }
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     ModelInfo oldModelInfo = pModelWidget->createModelInfo();
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QString modelName = pModelWidget->getLibraryTreeItem()->getNameStructure();
     bool attributesChanged = false;
     attributesChanged |= mpElement->getModelElement()->isFinal() != mpFinalCheckBox->isChecked();
@@ -2282,7 +2282,7 @@ void ElementAttributes::updateElementAttributes()
     // update element attributes if needed
     if (attributesChanged) {
       if (!pOMCProxy->setComponentProperties(modelName, mpElement->getName(), isFinal, flow, isProtected, isReplaceAble, variability, isInner, isOuter, causality)) {
-        QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+        QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
         pOMCProxy->printMessagesStringInternal();
       }
     }
@@ -2293,7 +2293,7 @@ void ElementAttributes::updateElementAttributes()
       if (pOMCProxy->setComponentComment(modelName, mpElement->getName(), comment)) {
         attributesChanged = true;
       } else {
-        QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+        QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
         pOMCProxy->printMessagesStringInternal();
       }
     }
@@ -2304,7 +2304,7 @@ void ElementAttributes::updateElementAttributes()
       if (pOMCProxy->setComponentDimensions(modelName, mpElement->getName(), arrayIndex)) {
         attributesChanged = true;
       } else {
-        QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+        QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
         pOMCProxy->printMessagesStringInternal();
       }
     }
@@ -2314,7 +2314,7 @@ void ElementAttributes::updateElementAttributes()
       if (pOMCProxy->renameComponentInClass(modelName, mpElement->getName(), mpNameTextBox->text())) {
         attributesChanged = true;
       } else {
-        QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+        QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
         pOMCProxy->printMessagesStringInternal();
       }
     }

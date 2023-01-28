@@ -85,14 +85,14 @@ InstallLibraryDialog::InstallLibraryDialog(QDialog *parent)
   // version combobox
   mpVersionComboBox = new QComboBox;
   // fetch libraries
-  QString indexFilePath = MainWindow::instance()->getLibraryIndexFilePath();
+  QString indexFilePath = MainWindowServices::instance()->getLibraryIndexFilePath();
   if (QFile::exists(indexFilePath)) {
     if (mIndexJsonDocument.parse(indexFilePath)) {
       QVariantMap result = mIndexJsonDocument.result.toMap();
       mLibrariesMap = result["libs"].toMap();
       for (QVariantMap::const_iterator librariesIterator = mLibrariesMap.begin(); librariesIterator != mLibrariesMap.end(); ++librariesIterator) {
         const QString library = librariesIterator.key();
-        QStringList versions = MainWindow::instance()->getOMCProxy()->getAvailablePackageVersions(library, "");
+        QStringList versions = MainWindowServices::instance()->getOMCProxy()->getAvailablePackageVersions(library, "");
         mLibrariesAndVersionsMap.insert(library, versions);
       }
     }
@@ -238,8 +238,8 @@ void InstallLibraryDialog::installLibrary()
   QString version = mpVersionComboBox->itemData(mpVersionComboBox->currentIndex()).toString();
   bool exactMatch = mpExactMatchCheckBox->isChecked();
 
-  if (MainWindow::instance()->getOMCProxy()->installPackage(library, version, exactMatch)) {
-    MainWindow::instance()->addSystemLibraries();
+  if (MainWindowServices::instance()->getOMCProxy()->installPackage(library, version, exactMatch)) {
+    MainWindowServices::instance()->addSystemLibraries();
     accept();
   } else {
     QMessageBox::critical(this, QString("%1 - %2").arg(Helper::applicationName, Helper::error),
@@ -302,8 +302,8 @@ void UpgradeInstalledLibrariesDialog::upgradeInstalledLibraries()
   mpUpgradeButton->setEnabled(false);
   repaint(); // repaint the dialog so progresslabel is updated.
 
-  if (MainWindow::instance()->getOMCProxy()->upgradeInstalledPackages(mpInstallNewestVersionsCheckBox->isChecked())) {
-    MainWindow::instance()->addSystemLibraries();
+  if (MainWindowServices::instance()->getOMCProxy()->upgradeInstalledPackages(mpInstallNewestVersionsCheckBox->isChecked())) {
+    MainWindowServices::instance()->addSystemLibraries();
     accept();
   } else {
     QMessageBox::critical(this, QString("%1 - %2").arg(Helper::applicationName, Helper::error),

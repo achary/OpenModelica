@@ -139,13 +139,13 @@ int OMSSimulationDialog::exec(const QString &modelCref, LibraryTreeItem *pLibrar
     delete mpSystemSimulationInformationWidget;
     mpSystemSimulationInformationWidget = 0;
   }
-  LibraryTreeItem *pTopLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getTopLevelLibraryTreeItem(mpLibraryTreeItem);
+  LibraryTreeItem *pTopLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getTopLevelLibraryTreeItem(mpLibraryTreeItem);
   LibraryTreeItem *pRootSystemLibraryTreeItem = 0;
   if (pTopLibraryTreeItem && pTopLibraryTreeItem->childrenSize() > 0) {
     pRootSystemLibraryTreeItem = pTopLibraryTreeItem->childAt(0);
     if (pRootSystemLibraryTreeItem) {
       if (!pRootSystemLibraryTreeItem->getModelWidget()) {
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pRootSystemLibraryTreeItem, false);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(pRootSystemLibraryTreeItem, false);
       }
       mpSystemSimulationInformationWidget = new SystemSimulationInformationWidget(pRootSystemLibraryTreeItem->getModelWidget());
       QHBoxLayout *pSystemSimulationInformationGroupBoxLayout = new QHBoxLayout;
@@ -185,7 +185,7 @@ void OMSSimulationDialog::simulate(LibraryTreeItem *pLibraryTreeItem, bool inter
   if (OMSProxy::instance()->saveModel(pLibraryTreeItem->getNameStructure(), fileName)) {
     OMSSimulationOutputWidget *pOMSSimulationOutputWidget = new OMSSimulationOutputWidget(pLibraryTreeItem->getNameStructure(), fileName, interactive);
     MessagesWidget::instance()->addSimulationOutputTab(pOMSSimulationOutputWidget, pLibraryTreeItem->getNameStructure());
-    MainWindow::instance()->switchToPlottingPerspectiveSlot();
+    MainWindowServices::instance()->switchToPlottingPerspectiveSlot();
   }
 }
 
@@ -206,10 +206,10 @@ void OMSSimulationDialog::simulationFinished(const QString &resultFilePath, QDat
   // use secsTo as lastModified returns to second not to mili/nanoseconds, see #5251
   bool resultFileNewer = resultFileLastModifiedDateTime.secsTo(resultFileModificationTime) >= 0;
   if (resultFileExists && resultFileNewer) {
-    VariablesWidget *pVariablesWidget = MainWindow::instance()->getVariablesWidget();
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    VariablesWidget *pVariablesWidget = MainWindowServices::instance()->getVariablesWidget();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QStringList list = pOMCProxy->readSimulationResultVars(resultFileInfo.absoluteFilePath());
-    MainWindow::instance()->switchToPlottingPerspectiveSlot();
+    MainWindowServices::instance()->switchToPlottingPerspectiveSlot();
     pVariablesWidget->insertVariablesItemsToTree(resultFileInfo.fileName(), resultFileInfo.absoluteDir().absolutePath(), list, SimulationOptions());
   }
 }
@@ -227,7 +227,7 @@ void OMSSimulationDialog::saveSimulationSettings()
     mpStopTimeTextBox->setText("1");
   }
   if (mpStartTimeTextBox->text().toDouble() > mpStopTimeTextBox->text().toDouble()) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error),
                           GUIMessages::getMessage(GUIMessages::SIMULATION_STARTTIME_LESSTHAN_STOPTIME), Helper::ok);
     return;
   }

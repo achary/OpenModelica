@@ -134,8 +134,8 @@ QString Helper::systemTLM = QString("TLM - Transmission Line Modeling System");
 QString Helper::systemWC = QString("Weakly Coupled - Connected Co-Simulation FMUs System");
 QString Helper::systemSC = QString("Strongly Coupled - Connected Model-Exchange FMUs System");
 /* Global translated variables */
-QString Helper::newModelicaClass;
 QString Helper::createNewModelicaClass;
+QString Helper::newModelicaClass;
 QString Helper::openModelicaFiles;
 QString Helper::openConvertModelicaFiles;
 QString Helper::libraries;

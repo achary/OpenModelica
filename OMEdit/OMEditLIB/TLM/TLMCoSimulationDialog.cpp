@@ -212,24 +212,24 @@ void TLMCoSimulationDialog::simulationProcessFinished(TLMCoSimulationOptions tlm
   QFileInfo fileInfo(tlmCoSimulationOptions.getFileName());
   QFileInfo resultFileInfo(fileInfo.absoluteDir().absolutePath() + "/" + fileInfo.completeBaseName() + ".csv");
   if (resultFileInfo.exists() && resultFileLastModifiedDateTime <= resultFileInfo.lastModified()) {
-    VariablesWidget *pVariablesWidget = MainWindow::instance()->getVariablesWidget();
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    VariablesWidget *pVariablesWidget = MainWindowServices::instance()->getVariablesWidget();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     QStringList list = pOMCProxy->readSimulationResultVars(resultFileInfo.absoluteFilePath());
     if (list.size() > 0) {
 #if !defined(WITHOUT_OSG)
       // only show the AnimationWindow if we have a visual xml file.
       QFileInfo visualFileInfo(fileInfo.absoluteDir().absolutePath() + "/" + fileInfo.completeBaseName() + "_visual.xml");
       if (visualFileInfo.exists()) {
-        MainWindow::instance()->getPlotWindowContainer()->addAnimationWindow(MainWindow::instance()->getPlotWindowContainer()->subWindowList().isEmpty());
-        AnimationWindow *pAnimationWindow = MainWindow::instance()->getPlotWindowContainer()->getCurrentAnimationWindow();
+        MainWindowServices::instance()->getPlotWindowContainer()->addAnimationWindow(MainWindowServices::instance()->getPlotWindowContainer()->subWindowList().isEmpty());
+        AnimationWindow *pAnimationWindow = MainWindowServices::instance()->getPlotWindowContainer()->getCurrentAnimationWindow();
         if (pAnimationWindow) {
           pAnimationWindow->openAnimationFile(resultFileInfo.absoluteFilePath());
         }
       }
 #endif
-      MainWindow::instance()->switchToPlottingPerspectiveSlot();
+      MainWindowServices::instance()->switchToPlottingPerspectiveSlot();
       pVariablesWidget->insertVariablesItemsToTree(resultFileInfo.fileName(), fileInfo.absoluteDir().absolutePath(), list, SimulationOptions());
-      MainWindow::instance()->getVariablesDockWidget()->show();
+      MainWindowServices::instance()->getVariablesDockWidget()->show();
     }
   }
 }
@@ -240,19 +240,19 @@ void TLMCoSimulationDialog::simulationProcessFinished(TLMCoSimulationOptions tlm
 bool TLMCoSimulationDialog::validate()
 {
   if (mpManagerProcessTextBox->text().isEmpty()) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
                           tr("Enter manager process."), Helper::ok);
     mpManagerProcessTextBox->setFocus();
     return false;
   }
   if (mpMonitorProcessTextBox->text().isEmpty()) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
                           tr("Enter monitor process."), Helper::ok);
     mpMonitorProcessTextBox->setFocus();
     return false;
   }
   if (mpMonitorPortTextBox->text().isEmpty()) {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName).arg(Helper::error),
                           tr("Enter a monitor port."), Helper::ok);
     mpMonitorPortTextBox->setFocus();
     return false;
@@ -403,7 +403,7 @@ void TLMCoSimulationDialog::runTLMCoSimulation()
     if (tlmCoSimulationOptions.isValid()) {
       setIsTLMCoSimulationRunning(true);
       if (!mpLibraryTreeItem->getModelWidget()) {
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showModelWidget(mpLibraryTreeItem, false);
       }
       mpLibraryTreeItem->getModelWidget()->createModelWidgetComponents();
       // write the visual xml file
@@ -506,7 +506,7 @@ bool CompositeModelSimulationParamsDialog::validateSimulationParams()
     mpStopTimeTextBox->setText("1");
   }
   if (mpStartTimeTextBox->text().toDouble() > mpStopTimeTextBox->text().toDouble()) {
-    QMessageBox::critical(MainWindow::instance(), QString(Helper::applicationName).append(" - ").append(Helper::error),
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString(Helper::applicationName).append(" - ").append(Helper::error),
                           GUIMessages::getMessage(GUIMessages::SIMULATION_STARTTIME_LESSTHAN_STOPTIME), Helper::ok);
     return false;
   }

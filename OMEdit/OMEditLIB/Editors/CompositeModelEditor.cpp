@@ -90,7 +90,7 @@ bool CompositeModelEditor::validateText()
       if (answer < 0 || OptionsDialog::instance()->getNotificationsPage()->getAlwaysAskForTextEditorErrorCheckBox()->isChecked()) {
         NotificationsDialog *pNotificationsDialog = new NotificationsDialog(NotificationsDialog::RevertPreviousOrFixErrorsManually,
                                                                             NotificationsDialog::CriticalIcon,
-                                                                            MainWindow::instance());
+                                                                            MainWindowServices::instance()->mainWindowWidget());
         pNotificationsDialog->setNotificationLabelString(GUIMessages::getMessage(GUIMessages::ERROR_IN_TEXT).arg("Composite Model")
                                                          .append(GUIMessages::getMessage(GUIMessages::CHECK_MESSAGES_BROWSER))
                                                          .append(GUIMessages::getMessage(GUIMessages::REVERT_PREVIOUS_OR_FIX_ERRORS_MANUALLY)));

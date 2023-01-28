@@ -605,7 +605,7 @@ QList<QPointF> ShapeAnnotation::getExtentsForInheritedShapeFromIconDiagramMap(Gr
   QPointF point2 = defaultPoint2;
   bool preserveAspectRatio = false;
 
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     ModelInstance::Extend *pExtend = dynamic_cast<ModelInstance::Extend*>(getParentModel());
     if (pExtend) {
       if (pGraphicsView->getViewType() == StringHandler::Icon) {
@@ -681,14 +681,14 @@ void ShapeAnnotation::applyTransformation()
   // if the extends have some new coordinate extents then use it to scale the shape
   LineAnnotation *pLineAnnotation = dynamic_cast<LineAnnotation*>(this);
   GraphicsView *pGraphicsView = 0;
-  if (MainWindow::instance()->isNewApi()) {
+  if (MainWindowServices::instance()->isNewApi()) {
     pGraphicsView = mpGraphicsView;
   } else {
     pGraphicsView = mpGraphicsView ? mpGraphicsView : mpReferenceShapeAnnotation->getGraphicsView();
   }
 
   if (!mpParentComponent && pGraphicsView && !(pLineAnnotation && pLineAnnotation->getLineType() != LineAnnotation::ShapeType)
-      && ((mpReferenceShapeAnnotation && mpReferenceShapeAnnotation->getGraphicsView()) || (MainWindow::instance()->isNewApi() && mIsInheritedShape))) {
+      && ((mpReferenceShapeAnnotation && mpReferenceShapeAnnotation->getGraphicsView()) || (MainWindowServices::instance()->isNewApi() && mIsInheritedShape))) {
     QList<QPointF> extendsCoOrdinateExtents = getExtentsForInheritedShapeFromIconDiagramMap(pGraphicsView, mpReferenceShapeAnnotation);
     ExtentAnnotation extent = pGraphicsView->mMergedCoOrdinateSystem.getExtent();
     qreal left = extent.at(0).x();
@@ -859,7 +859,7 @@ void ShapeAnnotation::setFileName(QString fileName)
     return;
   }
 
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   mOriginalFileName = fileName;
   QUrl fileUrl(mOriginalFileName);
   QFileInfo fileInfo(mOriginalFileName);
@@ -1807,7 +1807,7 @@ void ShapeAnnotation::showShapeProperties()
   if (!mpGraphicsView || mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getLibraryType() == LibraryTreeItem::CompositeModel) {
     return;
   }
-  MainWindow *pMainWindow = MainWindow::instance();
+  QWidget *pMainWindow = MainWindowServices::instance()->mainWindowWidget();
   ShapePropertiesDialog *pShapePropertiesDialog = new ShapePropertiesDialog(this, pMainWindow);
   pShapePropertiesDialog->exec();
 }
@@ -1823,7 +1823,7 @@ void ShapeAnnotation::showShapeAttributes()
   }
   LineAnnotation *pConnectionLineAnnotation = dynamic_cast<LineAnnotation*>(this);
   CompositeModelConnectionAttributes *pCompositeModelConnectionAttributes;
-  pCompositeModelConnectionAttributes = new CompositeModelConnectionAttributes(mpGraphicsView, pConnectionLineAnnotation, true, MainWindow::instance());
+  pCompositeModelConnectionAttributes = new CompositeModelConnectionAttributes(mpGraphicsView, pConnectionLineAnnotation, true, MainWindowServices::instance()->mainWindowWidget());
   pCompositeModelConnectionAttributes->exec();
 }
 
@@ -1837,7 +1837,7 @@ void ShapeAnnotation::editTransition()
     return;
   }
   LineAnnotation *pTransitionLineAnnotation = dynamic_cast<LineAnnotation*>(this);
-  CreateOrEditTransitionDialog *pCreateOrEditTransitionDialog = new CreateOrEditTransitionDialog(mpGraphicsView, pTransitionLineAnnotation, true, MainWindow::instance());
+  CreateOrEditTransitionDialog *pCreateOrEditTransitionDialog = new CreateOrEditTransitionDialog(mpGraphicsView, pTransitionLineAnnotation, true, MainWindowServices::instance()->mainWindowWidget());
   pCreateOrEditTransitionDialog->exec();
 }
 

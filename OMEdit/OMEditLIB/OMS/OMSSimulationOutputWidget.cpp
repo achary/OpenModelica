@@ -379,7 +379,7 @@ void OMSSimulationOutputWidget::parseSimulationVariables(const QVariant variable
     ++iterator;
   }
 
-  MainWindow::instance()->getVariablesWidget()->insertVariablesItemsToTree(mCref, OptionsDialog::instance()->getGeneralSettingsPage()->getWorkingDirectory(), variablesList, SimulationOptions());
+  MainWindowServices::instance()->getVariablesWidget()->insertVariablesItemsToTree(mCref, OptionsDialog::instance()->getGeneralSettingsPage()->getWorkingDirectory(), variablesList, SimulationOptions());
 }
 
 /*!
@@ -529,7 +529,7 @@ void OMSSimulationOutputWidget::simulationProcessFinished(int exitCode, QProcess
   mpCancelSimulationButton->setEnabled(false);
   // simulation finished show the results
   if (!mpSimulationRequestSocket) {
-    MainWindow::instance()->getOMSSimulationDialog()->simulationFinished(mResultFilePath, mResultFileLastModifiedDateTime);
+    MainWindowServices::instance()->getOMSSimulationDialog()->simulationFinished(mResultFilePath, mResultFileLastModifiedDateTime);
   }
   mpArchivedSimulationItem->setStatus(Helper::finished);
   mpSimulationSubscriberSocket->setSocketConnected(false);

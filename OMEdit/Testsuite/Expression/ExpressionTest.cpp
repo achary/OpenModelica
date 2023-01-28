@@ -445,5 +445,5 @@ void ExpressionTest::parseJSON_data()
 
 void ExpressionTest::cleanupTestCase()
 {
-  MainWindow::instance()->close();
+  MainWindowServices::instance()->close();
 }

@@ -894,7 +894,7 @@ void TransformationsWidget::loadTransformations()
     JsonDocument jsonDocument;
     if (!jsonDocument.parse(mInfoJSONFullFileName)) {
       MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica, jsonDocument.errorString, Helper::scriptingKind, Helper::errorLevel));
-      MainWindow::instance()->printStandardOutAndErrorFilesMessages();
+      MainWindowServices::instance()->printStandardOutAndErrorFilesMessages();
       return;
     }
     QVariantMap result = jsonDocument.result.toMap();
@@ -1167,7 +1167,7 @@ void TransformationsWidget::fetchEquationData(int equationIndex)
   QFileInfo fileInfo(fileName);
   if (fileInfo.isRelative()) {
     // find the class
-    LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(fileName);
+    LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(fileName);
     if (pLibraryTreeItem) {
       fileName = pLibraryTreeItem->getFileName();
     }
@@ -1349,7 +1349,7 @@ void TransformationsWidget::fetchVariableData(const QModelIndex &index)
   QFileInfo fileInfo(fileName);
   if (fileInfo.isRelative()) {
     // find the class
-    LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(fileName);
+    LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(fileName);
     if (pLibraryTreeItem) {
       fileName = pLibraryTreeItem->getFileName();
     }
@@ -1420,6 +1420,6 @@ void TransformationsWidget::parseProfiling(QString fileName)
     }
   } else {
     MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica, jsonDocument.errorString, Helper::scriptingKind, Helper::errorLevel));
-    MainWindow::instance()->printStandardOutAndErrorFilesMessages();
+    MainWindowServices::instance()->printStandardOutAndErrorFilesMessages();
   }
 }

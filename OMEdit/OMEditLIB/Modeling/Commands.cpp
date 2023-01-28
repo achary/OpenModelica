@@ -283,10 +283,10 @@ void AddComponentCommand::redoInternal()
     UpdateElementAttributesCommand::updateComponentModifiers(mpDiagramComponent, *mpDiagramComponent->getElementInfo());
     if (mpDiagramComponent->getElementInfo()->isArray()) {
       QString modelName = pModelWidget->getLibraryTreeItem()->getNameStructure();
-      OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+      OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
       const QString arrayIndex = QString("{%1}").arg(mpDiagramComponent->getElementInfo()->getArrayIndex());
       if (!pOMCProxy->setComponentDimensions(modelName, mpDiagramComponent->getElementInfo()->getName(), arrayIndex)) {
-        QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+        QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
         pOMCProxy->printMessagesStringInternal();
       }
     }
@@ -451,7 +451,7 @@ void UpdateElementAttributesCommand::updateComponentAttributes(Element *pCompone
   QString isOuter = componentInfo.getOuter() ? "true" : "false";
   QString causality = componentInfo.getCausality();
 
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   // update component attributes
   if (pOMCProxy->setComponentProperties(modelName, pComponent->getElementInfo()->getName(), isFinal, flow, isProtected, isReplaceAble, variability, isInner, isOuter, causality)) {
     pComponent->getElementInfo()->setFinal(componentInfo.getFinal());
@@ -483,7 +483,7 @@ void UpdateElementAttributesCommand::updateComponentAttributes(Element *pCompone
       }
     }
   } else {
-    QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+    QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
     pOMCProxy->printMessagesStringInternal();
   }
   // update the component comment only if its changed.
@@ -506,7 +506,7 @@ void UpdateElementAttributesCommand::updateComponentAttributes(Element *pCompone
         }
       }
     } else {
-      QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+      QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
       pOMCProxy->printMessagesStringInternal();
     }
   }
@@ -531,7 +531,7 @@ void UpdateElementAttributesCommand::updateComponentAttributes(Element *pCompone
         }
       }
     } else {
-      QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+      QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
       pOMCProxy->printMessagesStringInternal();
     }
   }
@@ -541,7 +541,7 @@ void UpdateElementAttributesCommand::updateComponentAttributes(Element *pCompone
     if (pOMCProxy->setComponentDimensions(modelName, pComponent->getElementInfo()->getName(), arrayIndex)) {
       pComponent->getElementInfo()->setArrayIndex(arrayIndex);
     } else {
-      QMessageBox::critical(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
+      QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::error), pOMCProxy->getResult(), Helper::ok);
       pOMCProxy->printMessagesStringInternal();
     }
   }
@@ -562,7 +562,7 @@ void UpdateElementAttributesCommand::updateComponentModifiers(Element *pComponen
   for (modifiersIterator = modifiers.begin(); modifiersIterator != modifiers.end(); ++modifiersIterator) {
     QString modifierName = QString(pComponent->getName()).append(".").append(modifiersIterator.key());
     QString modifierValue = modifiersIterator.value();
-    if (MainWindow::instance()->getOMCProxy()->setComponentModifierValue(modelName, modifierName, modifierValue)) {
+    if (MainWindowServices::instance()->getOMCProxy()->setComponentModifierValue(modelName, modifierName, modifierValue)) {
       modifierValueChanged = true;
     }
   }
@@ -592,7 +592,7 @@ UpdateElementParametersCommand::UpdateElementParametersCommand(Element *pCompone
  */
 void UpdateElementParametersCommand::redoInternal()
 {
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   QString className = mpComponent->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
   if (!mpComponent->getReferenceElement()) {
     // remove all the modifiers of a component.
@@ -627,7 +627,7 @@ void UpdateElementParametersCommand::redoInternal()
  */
 void UpdateElementParametersCommand::undo()
 {
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   QString className = mpComponent->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure();
   if (!mpComponent->getReferenceElement()) {
     // remove all the modifiers of a component.
@@ -667,7 +667,7 @@ DeleteComponentCommand::DeleteComponentCommand(Element *pComponent, GraphicsView
 
   } else {
     // save component modifiers before deleting if any
-    mpComponent->getElementInfo()->getModifiersMap(MainWindow::instance()->getOMCProxy(), mpComponent->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure(), mpComponent);
+    mpComponent->getElementInfo()->getModifiersMap(MainWindowServices::instance()->getOMCProxy(), mpComponent->getGraphicsView()->getModelWidget()->getLibraryTreeItem()->getNameStructure(), mpComponent);
   }
   //Save sub-model parameters for composite models
   if (pGraphicsView->getModelWidget()->getLibraryTreeItem()->getLibraryType() == LibraryTreeItem::CompositeModel) {
@@ -1211,7 +1211,7 @@ void UpdateCoOrdinateSystemCommand::redoInternal()
     updateReferencedShapes(pGraphicsView);
     pGraphicsView->getModelWidget()->getLibraryTreeItem()->emitCoOrdinateSystemUpdated(pGraphicsView);
   }
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   // only add version and uses annotation to top level class.
   if (mpGraphicsView->getModelWidget()->getLibraryTreeItem()->isTopLevel()) {
     // version
@@ -1219,8 +1219,8 @@ void UpdateCoOrdinateSystemCommand::redoInternal()
     if (pOMCProxy->addClassAnnotation(mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), versionAnnotation)) {
       mpGraphicsView->getModelWidget()->getLibraryTreeItem()->mClassInformation.version = mNewVersion;
       // if documentation view is visible then update it
-      if (MainWindow::instance()->getDocumentationDockWidget()->isVisible()) {
-        MainWindow::instance()->getDocumentationWidget()->showDocumentation(mpGraphicsView->getModelWidget()->getLibraryTreeItem());
+      if (MainWindowServices::instance()->getDocumentationDockWidget()->isVisible()) {
+        MainWindowServices::instance()->getDocumentationWidget()->showDocumentation(mpGraphicsView->getModelWidget()->getLibraryTreeItem());
       }
     }
     // uses annotation
@@ -1255,7 +1255,7 @@ void UpdateCoOrdinateSystemCommand::undo()
     updateReferencedShapes(pGraphicsView);
     pGraphicsView->getModelWidget()->getLibraryTreeItem()->emitCoOrdinateSystemUpdated(pGraphicsView);
   }
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   // only add version and uses annotation to top level class.
   if (mpGraphicsView->getModelWidget()->getLibraryTreeItem()->isTopLevel()) {
     // version
@@ -1263,8 +1263,8 @@ void UpdateCoOrdinateSystemCommand::undo()
     if (pOMCProxy->addClassAnnotation(mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), versionAnnotation)) {
       mpGraphicsView->getModelWidget()->getLibraryTreeItem()->mClassInformation.version = mOldVersion;
       // if documentation view is visible then update it
-      if (MainWindow::instance()->getDocumentationDockWidget()->isVisible()) {
-        MainWindow::instance()->getDocumentationWidget()->showDocumentation(mpGraphicsView->getModelWidget()->getLibraryTreeItem());
+      if (MainWindowServices::instance()->getDocumentationDockWidget()->isVisible()) {
+        MainWindowServices::instance()->getDocumentationWidget()->showDocumentation(mpGraphicsView->getModelWidget()->getLibraryTreeItem());
       }
     }
     // uses annotation
@@ -1315,7 +1315,7 @@ UpdateClassAnnotationCommand::UpdateClassAnnotationCommand(LibraryTreeItem *pLib
  */
 void UpdateClassAnnotationCommand::redoInternal()
 {
-  MainWindow::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mNewAnnotation);
+  MainWindowServices::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mNewAnnotation);
 }
 
 /*!
@@ -1324,7 +1324,7 @@ void UpdateClassAnnotationCommand::redoInternal()
  */
 void UpdateClassAnnotationCommand::undo()
 {
-  MainWindow::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mOldAnnotation);
+  MainWindowServices::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mOldAnnotation);
 }
 
 UpdateClassSimulationFlagsAnnotationCommand::UpdateClassSimulationFlagsAnnotationCommand(LibraryTreeItem *pLibraryTreeItem,
@@ -1344,7 +1344,7 @@ UpdateClassSimulationFlagsAnnotationCommand::UpdateClassSimulationFlagsAnnotatio
  */
 void UpdateClassSimulationFlagsAnnotationCommand::redoInternal()
 {
-  MainWindow::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mNewSimulationFlags);
+  MainWindowServices::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mNewSimulationFlags);
 }
 
 /*!
@@ -1353,7 +1353,7 @@ void UpdateClassSimulationFlagsAnnotationCommand::redoInternal()
  */
 void UpdateClassSimulationFlagsAnnotationCommand::undo()
 {
-  MainWindow::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mOldSimulationFlags);
+  MainWindowServices::instance()->getOMCProxy()->addClassAnnotation(mpLibraryTreeItem->getNameStructure(), mOldSimulationFlags);
 }
 
 UpdateSubModelAttributesCommand::UpdateSubModelAttributesCommand(Element *pComponent, const ElementInfo &oldComponentInfo,
@@ -1564,28 +1564,28 @@ OMSimulatorUndoCommand::OMSimulatorUndoCommand(const QString &modelName, const Q
 void OMSimulatorUndoCommand::redoInternal()
 {
   // Get the model LibraryTreeItem
-  LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+  LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
   LibraryTreeItem *pModelLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItemOneLevel(mModelName);
   assert(pModelLibraryTreeItem);
   // Save the expanded LibraryTreeItems list
   pLibraryTreeModel->getExpandedLibraryTreeItemsList(pModelLibraryTreeItem, &mExpandedLibraryTreeItemsList);
   // save the selected components
-  MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidgetSelectedComponents(&mIconSelectedItemsList, &mDiagramSelectedItemsList);
+  MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidgetSelectedComponents(&mIconSelectedItemsList, &mDiagramSelectedItemsList);
   // save the opened ModelWidgets that belong to this model
-  MainWindow::instance()->getModelWidgetContainer()->getOpenedModelWidgetsOfOMSimulatorModel(mModelName, &mOpenedModelWidgetsList);
+  MainWindowServices::instance()->getModelWidgetContainer()->getOpenedModelWidgetsOfOMSimulatorModel(mModelName, &mOpenedModelWidgetsList);
   // load the new snapshot
   if (mDoSnapShot) {
     OMSProxy::instance()->importSnapshot(mModelName, mNewSnapshot, &mModelName);
   }
   // reload/redraw the OMSimulator model
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->reLoadOMSimulatorModel(mModelName, mEditedCref, mNewSnapshot, mOldEditedCref, mNewEditedCref);
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->reLoadOMSimulatorModel(mModelName, mEditedCref, mNewSnapshot, mOldEditedCref, mNewEditedCref);
   // Get the new model LibraryTreeItem
   LibraryTreeItem *pNewModelLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItemOneLevel(mModelName);
   assert(pNewModelLibraryTreeItem);
   // Restore the expanded LibraryTreeItems list
   pLibraryTreeModel->expandLibraryTreeItems(pNewModelLibraryTreeItem, mExpandedLibraryTreeItemsList);
   // Restore the selected components
-  MainWindow::instance()->getModelWidgetContainer()->selectCurrentModelWidgetComponents(mIconSelectedItemsList, mDiagramSelectedItemsList);
+  MainWindowServices::instance()->getModelWidgetContainer()->selectCurrentModelWidgetComponents(mIconSelectedItemsList, mDiagramSelectedItemsList);
   // Restore the closed ModelWidgets
   restoreClosedModelWidgets();
   // switch to the ModelWidget where the change happened
@@ -1602,9 +1602,9 @@ void OMSimulatorUndoCommand::undo()
   if (mDoSnapShot) {
     OMSProxy::instance()->importSnapshot(mModelName, mOldSnapshot, &mModelName);
   }
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->reLoadOMSimulatorModel(mModelName, mEditedCref, mOldSnapshot, mNewEditedCref, mOldEditedCref);
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->reLoadOMSimulatorModel(mModelName, mEditedCref, mOldSnapshot, mNewEditedCref, mOldEditedCref);
   // Get the new model LibraryTreeItem
-  LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+  LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
   LibraryTreeItem *pNewModelLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItemOneLevel(mModelName);
   assert(pNewModelLibraryTreeItem);
   // Restore the expanded LibraryTreeItems list
@@ -1621,7 +1621,7 @@ void OMSimulatorUndoCommand::undo()
  */
 void OMSimulatorUndoCommand::restoreClosedModelWidgets()
 {
-  LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+  LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
   foreach (QString modelWidgetName, mOpenedModelWidgetsList) {
     LibraryTreeItem *pLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItem(modelWidgetName);
     if (pLibraryTreeItem) {
@@ -1637,7 +1637,7 @@ void OMSimulatorUndoCommand::restoreClosedModelWidgets()
 void OMSimulatorUndoCommand::switchToEditedModelWidget()
 {
   if (mSwitchToEdited) {
-    LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+    LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
     LibraryTreeItem *pEditedLibraryTreeItem = pLibraryTreeModel->findLibraryTreeItem(mEditedCref);
     if (pEditedLibraryTreeItem) {
       pLibraryTreeModel->showModelWidget(pEditedLibraryTreeItem);
@@ -1651,7 +1651,7 @@ OMCUndoCommand::OMCUndoCommand(LibraryTreeItem *pLibraryTreeItem, const ModelInf
   mpLibraryTreeItem = pLibraryTreeItem;
   mOldModelText = mpLibraryTreeItem->getModelWidget()->getModelTextForOMCUndoCommand();
   mOldModelInfo = oldModelInfo;
-  mNewModelText = MainWindow::instance()->getOMCProxy()->listFile(pLibraryTreeItem->getNameStructure());
+  mNewModelText = MainWindowServices::instance()->getOMCProxy()->listFile(pLibraryTreeItem->getNameStructure());
   mNewModelInfo = newModelInfo;
   mUndoDoneOnce = false;
   setText(commandText);
@@ -1660,14 +1660,14 @@ OMCUndoCommand::OMCUndoCommand(LibraryTreeItem *pLibraryTreeItem, const ModelInf
 void OMCUndoCommand::redoInternal()
 {
   if (mUndoDoneOnce) {
-    MainWindow::instance()->getOMCProxy()->loadString(mNewModelText, mpLibraryTreeItem->getFileName());
+    MainWindowServices::instance()->getOMCProxy()->loadString(mNewModelText, mpLibraryTreeItem->getFileName());
   }
   mpLibraryTreeItem->getModelWidget()->reDrawModelWidget(mNewModelInfo);
 }
 
 void OMCUndoCommand::undo()
 {
-  MainWindow::instance()->getOMCProxy()->loadString(mOldModelText, mpLibraryTreeItem->getFileName());
+  MainWindowServices::instance()->getOMCProxy()->loadString(mOldModelText, mpLibraryTreeItem->getFileName());
   mUndoDoneOnce = true;
   mpLibraryTreeItem->getModelWidget()->reDrawModelWidget(mOldModelInfo);
 }

@@ -25,7 +25,7 @@ RevertCommitsDialog::RevertCommitsDialog(QWidget *pParent)
   setWindowTitle(QString(Helper::applicationName).append(" - ").append(tr("Revert Commit")));
   setAttribute(Qt::WA_DeleteOnClose);
   resize(500, 400);
-  QString repository = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString repository = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   // Working directory
   mpWorkingDirectoryLabel = new Label(tr("Working Directory:"));
   mpWorkingDirectoryTextBox = new QLineEdit;
@@ -76,7 +76,7 @@ RevertCommitsDialog::RevertCommitsDialog(QWidget *pParent)
 void RevertCommitsDialog::commitTextChanged(const QString &commit)
 {
   mpProcess = new QProcess(this);
-  QString repository = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString repository = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   QFileInfo fileInfo(repository);
   QString directory = fileInfo.absoluteDir().absolutePath();
   mpProcess->setWorkingDirectory(directory);
@@ -89,7 +89,7 @@ void RevertCommitsDialog::commitTextChanged(const QString &commit)
 void RevertCommitsDialog::getCommitHistory()
 {
   mpProcess = new QProcess(this);
-  QString repository = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString repository = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   QFileInfo fileInfo(repository);
   QString directory = fileInfo.absoluteDir().absolutePath();
   mpProcess->setWorkingDirectory(directory);
@@ -102,7 +102,7 @@ void RevertCommitsDialog::getCommitHistory()
 void RevertCommitsDialog::revertCommit()
 {
   mpProcess = new QProcess(this);
-  QString repository = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString repository = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   QFileInfo fileInfo(repository);
   QString directory = fileInfo.absoluteDir().absolutePath();
   mpProcess->setWorkingDirectory(directory);
@@ -193,7 +193,7 @@ LogCommitDialog::LogCommitDialog(RevertCommitsDialog *pRevertCommitsDialog)
 void LogCommitDialog::getCommitLog()
 {
   mpProcess = new QProcess(this);
-  QString repository = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString repository = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   QFileInfo fileInfo(repository);
   QString directory = fileInfo.absoluteDir().absolutePath();
   mpProcess->setWorkingDirectory(directory);

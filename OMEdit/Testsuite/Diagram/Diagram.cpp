@@ -49,12 +49,12 @@ void Diagram::initTestCase()
 {
   QVector<QPair<QString, QString> > libraries;
   libraries.append(qMakePair(QString("Modelica"), QString("default")));
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->addModelicaLibraries(libraries);
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->addModelicaLibraries(libraries);
 }
 
 void Diagram::chuaCircuit()
 {
-  LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem("Modelica.Electrical.Analog.Examples.ChuaCircuit");
+  LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem("Modelica.Electrical.Analog.Examples.ChuaCircuit");
   if (!pLibraryTreeItem) {
     QFAIL("Failed to find Modelica.Electrical.Analog.Examples.ChuaCircuit. Makesure MSL is loaded.");
   }
@@ -63,12 +63,12 @@ void Diagram::chuaCircuit()
   }
 
   // Open the Modelica.Electrical.Analog.Examples.ChuaCircuit diagram.
-  QModelIndex modelIndex = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->libraryTreeItemIndex(pLibraryTreeItem);
-  QModelIndex proxyIndex = MainWindow::instance()->getLibraryWidget()->getLibraryTreeProxyModel()->mapFromSource(modelIndex);
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeView()->libraryTreeItemDoubleClicked(proxyIndex);
+  QModelIndex modelIndex = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->libraryTreeItemIndex(pLibraryTreeItem);
+  QModelIndex proxyIndex = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeProxyModel()->mapFromSource(modelIndex);
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeView()->libraryTreeItemDoubleClicked(proxyIndex);
 }
 
 void Diagram::cleanupTestCase()
 {
-  MainWindow::instance()->close();
+  MainWindowServices::instance()->close();
 }

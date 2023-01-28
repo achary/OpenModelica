@@ -97,7 +97,7 @@ OMCProxy::OMCProxy(threadData_t* threadData, QWidget *pParent)
   pVerticalalLayout->addLayout(pHorizontalLayout);
   mpOMCLoggerWidget->setLayout(pVerticalalLayout);
   mpOMCLoggerWidget->installEventFilter(this);
-  if (MainWindow::instance()->isDebug()) {
+  if (MainWindowServices::instance()->isDebug()) {
     // OMC Diff widget
     mpOMCDiffWidget = new QWidget;
     mpOMCDiffWidget->resize(640, 480);
@@ -137,7 +137,7 @@ OMCProxy::OMCProxy(threadData_t* threadData, QWidget *pParent)
   mLoadModelError = false;
   //start the server
   if(!initializeOMC(threadData)) {  // if we are unable to start OMC. Exit the application.
-    MainWindow::instance()->setExitApplicationStatus(true);
+    MainWindowServices::instance()->setExitApplicationStatus(true);
     return;
   }
 }
@@ -150,7 +150,7 @@ OMCProxy::~OMCProxy()
 {
   // delete the logger widget
   delete mpOMCLoggerWidget;
-  if (MainWindow::instance()->isDebug()) {
+  if (MainWindowServices::instance()->isDebug()) {
     delete mpOMCDiffWidget;
   }
 }
@@ -348,21 +348,21 @@ void OMCProxy::sendCommand(const QString expression, bool saveToHistory)
       FlatModelica::Expression exp = FlatModelica::Expression::parse(expression);
 
       if (mLibrariesBrowserAdditionCommandsList.contains(exp.functionName())) {
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->loadDependentLibraries(getClassNames());
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->loadDependentLibraries(getClassNames());
       } else if (mLibrariesBrowserDeletionCommandsList.contains(exp.functionName())) {
         if (exp.functionName().compare(QStringLiteral("deleteClass")) == 0) {
           if (exp.args().size() > 0) {
-            LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(exp.arg(0).toQString());
+            LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(exp.arg(0).toQString());
             if (pLibraryTreeItem) {
-              MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadClass(pLibraryTreeItem, false, false);
+              MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadClass(pLibraryTreeItem, false, false);
             }
           }
         } else {
           int i = 0;
-          while (i < MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem()->childrenSize()) {
-            LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem()->child(i);
+          while (i < MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem()->childrenSize()) {
+            LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem()->child(i);
             if (pLibraryTreeItem && pLibraryTreeItem->getLibraryType() == LibraryTreeItem::Modelica) {
-              MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadClass(pLibraryTreeItem, false, false);
+              MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadClass(pLibraryTreeItem, false, false);
               i = 0;  //Restart iteration
             } else {
               i++;
@@ -414,7 +414,7 @@ QString OMCProxy::getResult()
 void OMCProxy::logCommand(QString command, bool saveToHistory)
 {
   if (isLoggingEnabled()) {
-    if (saveToHistory || MainWindow::instance()->isDebug()) {
+    if (saveToHistory || MainWindowServices::instance()->isDebug()) {
       // insert the command to the logger window.
       QFont font(Helper::monospacedFontInfo.family(), Helper::monospacedFontInfo.pointSize() - 2, QFont::Bold, false);
       QTextCharFormat format;
@@ -441,7 +441,7 @@ void OMCProxy::logCommand(QString command, bool saveToHistory)
       }
     }
     // flush the logs if --Debug=true
-    if (MainWindow::instance()->isDebug()) {
+    if (MainWindowServices::instance()->isDebug()) {
       fflush(NULL);
     }
   }
@@ -466,7 +466,7 @@ void OMCProxy::logResponse(QString command, QString response, double elapsed, bo
         break;
       }
     }
-    if (customCommand || MainWindow::instance()->isDebug()) {
+    if (customCommand || MainWindowServices::instance()->isDebug()) {
       // insert the response to the logger window.
       QFont font(Helper::monospacedFontInfo.family(), Helper::monospacedFontInfo.pointSize() - 2, QFont::Normal, false);
       QTextCharFormat format;
@@ -480,7 +480,7 @@ void OMCProxy::logResponse(QString command, QString response, double elapsed, bo
       fputs(QString("#s#; %1; %2; \'%3\'\n\n").arg(QString::number(elapsed, 'f', 6)).arg(QString::number(mTotalOMCCallsTime, 'f', 6)).arg(firstLine).toUtf8().constData(), mpCommunicationLogFile);
     }
     // flush the logs if --Debug=true
-    if (MainWindow::instance()->isDebug()) {
+    if (MainWindowServices::instance()->isDebug()) {
       fflush(NULL);
     }
   }
@@ -532,7 +532,7 @@ void OMCProxy::sendCustomExpression()
  */
 void OMCProxy::openOMCDiffWidget()
 {
-  if (MainWindow::instance()->isDebug()) {
+  if (MainWindowServices::instance()->isDebug()) {
     mpOMCDiffBeforeTextBox->setFocus(Qt::ActiveWindowFocusReason);
     mpOMCDiffWidget->show();
     mpOMCDiffWidget->raise();
@@ -558,7 +558,7 @@ void OMCProxy::removeObjectRefFile()
 void OMCProxy::exitApplication()
 {
   removeObjectRefFile();
-  QMessageBox::critical(MainWindow::instance(), QString(Helper::applicationName).append(" - ").append(Helper::error),
+  QMessageBox::critical(MainWindowServices::instance()->mainWindowWidget(), QString(Helper::applicationName).append(" - ").append(Helper::error),
                         QString(tr("Connection with the OpenModelica Compiler has been lost."))
                         .append("\n\n").append(Helper::applicationName).append(" will close."), Helper::ok);
   exit(EXIT_FAILURE);
@@ -585,7 +585,7 @@ QString OMCProxy::getErrorString(bool warningsAsErrors)
  */
 bool OMCProxy::printMessagesStringInternal()
 {
-  MainWindow::instance()->printStandardOutAndErrorFilesMessages();
+  MainWindowServices::instance()->printStandardOutAndErrorFilesMessages();
   // read errors
   int errorsSize = getMessagesStringInternal();
   bool returnValue = errorsSize > 0 ? true : false;
@@ -753,7 +753,7 @@ QString OMCProxy::getVersion(QString className)
  */
 void OMCProxy::loadSystemLibraries(const QVector<QPair<QString, QString> > libraries)
 {
-  if (MainWindow::instance()->isTestsuiteRunning()) {
+  if (MainWindowServices::instance()->isTestsuiteRunning()) {
     QPair<QString, QString> library;
     foreach (library, libraries) {
       loadModel(library.first, library.second);
@@ -788,7 +788,7 @@ void OMCProxy::loadSystemLibraries(const QVector<QPair<QString, QString> > libra
  */
 void OMCProxy::loadUserLibraries()
 {
-  if (!MainWindow::instance()->isTestsuiteRunning()) {
+  if (!MainWindowServices::instance()->isTestsuiteRunning()) {
     QSettings *pSettings = Utilities::getApplicationSettings();
     pSettings->beginGroup("userlibraries");
     QStringList libraries = pSettings->childKeys();
@@ -796,7 +796,7 @@ void OMCProxy::loadUserLibraries()
     foreach (QString lib, libraries) {
       QString encoding = pSettings->value("userlibraries/" + lib).toString();
       QString fileName = QUrl::fromPercentEncoding(QByteArray(lib.toUtf8().constData()));
-      MainWindow::instance()->getLibraryWidget()->openFile(fileName, encoding);
+      MainWindowServices::instance()->getLibraryWidget()->openFile(fileName, encoding);
     }
   }
 }
@@ -1955,7 +1955,7 @@ QString OMCProxy::diffModelicaFileListings(const QString &before, const QString 
       MessageItem messageItem(MessageItem::Modelica, msg, Helper::scriptingKind, Helper::warningLevel);
       MessagesWidget::instance()->addGUIMessage(messageItem);
     }
-    if (MainWindow::instance()->isDebug()) {
+    if (MainWindowServices::instance()->isDebug()) {
       mpOMCDiffBeforeTextBox->setPlainText(before);
       mpOMCDiffAfterTextBox->setPlainText(after);
       mpOMCDiffMergedTextBox->setPlainText(result);
@@ -2831,7 +2831,7 @@ bool OMCProxy::setModelicaPath(const QString &path)
 {
   bool result = mpOMCInterface->setModelicaPath(path);
   printMessagesStringInternal();
-  MainWindow::instance()->addSystemLibraries();
+  MainWindowServices::instance()->addSystemLibraries();
   return result;
 }
 
@@ -3473,7 +3473,7 @@ QJsonObject OMCProxy::getModelInstance(const QString &className, bool prettyPrin
   if (icon) {
     modelInstanceJson = mpOMCInterface->getModelInstanceIcon(className, prettyPrint);
     if (modelInstanceJson.isEmpty()) {
-      if (MainWindow::instance()->isDebug()) {
+      if (MainWindowServices::instance()->isDebug()) {
         QString msg = QString("<b>getModelInstanceIcon(%1, %2)</b> failed. Using <b>getModelInstance(%1, %2)</b>.").arg(className).arg(prettyPrint ? "true" : "false");
         MessageItem messageItem(MessageItem::Modelica, msg, Helper::scriptingKind, Helper::errorLevel);
         MessagesWidget::instance()->addGUIMessage(messageItem);

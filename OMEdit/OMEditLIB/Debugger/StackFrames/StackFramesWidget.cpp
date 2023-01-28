@@ -278,7 +278,7 @@ void StackFramesTreeWidget::createStackFrames(GDBMIValue *pGDBMIValue)
   }
   // if there are no stack frames or no enabled stack frames then we need to clear locals browser.
   QList<QVector<QVariant> > locals;
-  MainWindow::instance()->getLocalsWidget()->getLocalsTreeModel()->insertLocalsList(locals);
+  MainWindowServices::instance()->getLocalsWidget()->getLocalsTreeModel()->insertLocalsList(locals);
   /* if we reach here we should suspend the debugger. Otherwise the debugger is suspended in GDBAdapter::stackListVariablesCB */
   GDBAdapter::instance()->suspendDebugger();
 }
@@ -642,6 +642,6 @@ void StackFramesWidget::stackCurrentItemChanged(QTreeWidgetItem *pTreeWidgetItem
     QByteArray cmd = CommandFactory::stackListVariables(getSelectedThread(), getSelectedFrame(), "--simple-values");
     GDBAdapter::instance()->postCommand(cmd, &GDBAdapter::stackListVariablesCB);
     /* Get the stack frame location and mark the line highlighted. */
-    MainWindow::instance()->findFileAndGoToLine(pStackFrameItem->getFile(), pStackFrameItem->getLine());
+    MainWindowServices::instance()->findFileAndGoToLine(pStackFrameItem->getFile(), pStackFrameItem->getLine());
   }
 }

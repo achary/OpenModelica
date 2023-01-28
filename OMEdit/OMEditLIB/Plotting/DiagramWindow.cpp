@@ -67,7 +67,7 @@ void DiagramWindow::showVisualizationDiagram(ModelWidget *pModelWidget)
     setWindowTitle(pModelWidget->getLibraryTreeItem()->getName());
     mpModelWidget = pModelWidget;
     mpModelWidget->getDiagramGraphicsView()->setIsVisualizationView(true);
-    connect(MainWindow::instance()->getVariablesWidget(), SIGNAL(updateDynamicSelect(double)), mpModelWidget->getDiagramGraphicsView(), SIGNAL(updateDynamicSelect(double)));
+    connect(MainWindowServices::instance()->getVariablesWidget(), SIGNAL(updateDynamicSelect(double)), mpModelWidget->getDiagramGraphicsView(), SIGNAL(updateDynamicSelect(double)));
     mpModelWidget->getDiagramGraphicsView()->show();
     mpMainLayout->addWidget(mpModelWidget->getDiagramGraphicsView());
   } else {
@@ -84,7 +84,7 @@ void DiagramWindow::removeVisualizationDiagram()
   if (mpModelWidget) {
     // set the window title to default
     setWindowTitle("Diagram");
-    disconnect(MainWindow::instance()->getVariablesWidget(), SIGNAL(updateDynamicSelect(double)), mpModelWidget->getDiagramGraphicsView(), SIGNAL(updateDynamicSelect(double)));
+    disconnect(MainWindowServices::instance()->getVariablesWidget(), SIGNAL(updateDynamicSelect(double)), mpModelWidget->getDiagramGraphicsView(), SIGNAL(updateDynamicSelect(double)));
     mpMainLayout->removeWidget(mpModelWidget->getDiagramGraphicsView());
   }
 }
@@ -97,5 +97,5 @@ void DiagramWindow::removeVisualizationDiagram()
 void DiagramWindow::closeEvent(QCloseEvent *event)
 {
   Q_UNUSED(event);
-  MainWindow::instance()->getPlotWindowContainer()->removeSubWindow(this);
+  MainWindowServices::instance()->getPlotWindowContainer()->removeSubWindow(this);
 }

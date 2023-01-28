@@ -120,7 +120,7 @@ OptionsDialog::OptionsDialog(QWidget *pParent)
   mpTraceabilityPage = new TraceabilityPage(this);
   // Get the settings.
   // Don't read the settings in case we are running the testsuite. We want default OMEdit.
-  if (!MainWindow::instance()->isTestsuiteRunning()) {
+  if (!MainWindowServices::instance()->isTestsuiteRunning()) {
     readSettings();
   }
   // set up the Options Dialog
@@ -184,7 +184,7 @@ void OptionsDialog::readGeneralSettings()
   // read the working directory
   if (mpSettings->contains("workingDirectory")) {
     const QString workingDirectory = mpSettings->value("workingDirectory").toString();
-    if (!workingDirectory.isEmpty() && !MainWindow::instance()->getOMCProxy()->changeDirectory(workingDirectory).isEmpty()) {
+    if (!workingDirectory.isEmpty() && !MainWindowServices::instance()->getOMCProxy()->changeDirectory(workingDirectory).isEmpty()) {
       mpGeneralSettingsPage->setWorkingDirectory(workingDirectory);
     }
   } else {
@@ -322,7 +322,7 @@ void OptionsDialog::readLibrariesSettings()
   // read ModelicaPath
   if (mpSettings->contains("modelicaPath-1")) {
     const QString modelicaPath = mpSettings->value("modelicaPath-1").toString();
-    if (!modelicaPath.isEmpty() && MainWindow::instance()->getOMCProxy()->setModelicaPath(modelicaPath)) {
+    if (!modelicaPath.isEmpty() && MainWindowServices::instance()->getOMCProxy()->setModelicaPath(modelicaPath)) {
       mpLibrariesPage->getModelicaPathTextBox()->setText(modelicaPath);
     }
   } else {
@@ -1553,8 +1553,8 @@ void OptionsDialog::saveGeneralSettings()
   const QString workingDirectory = mpGeneralSettingsPage->getWorkingDirectory();
   if (workingDirectory.isEmpty() || workingDirectory.compare(OptionsDefaults::GeneralSettings::workingDirectory) == 0) {
     mpSettings->remove("workingDirectory");
-    MainWindow::instance()->getOMCProxy()->changeDirectory(OptionsDefaults::GeneralSettings::workingDirectory);
-  } else if (!MainWindow::instance()->getOMCProxy()->changeDirectory(workingDirectory).isEmpty()) {
+    MainWindowServices::instance()->getOMCProxy()->changeDirectory(OptionsDefaults::GeneralSettings::workingDirectory);
+  } else if (!MainWindowServices::instance()->getOMCProxy()->changeDirectory(workingDirectory).isEmpty()) {
     mpSettings->setValue("workingDirectory", workingDirectory);
   }
   // save toolbar icon size
@@ -1635,7 +1635,7 @@ void OptionsDialog::saveGeneralSettings()
     mpSettings->setValue("showHiddenClasses", showHiddenClasses);
   }
   // show/hide the protected classes
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->showHideProtectedClasses();
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->showHideProtectedClasses();
   // save synchronize with ModelWidget
   bool synchronizeWithModelWidget = mpGeneralSettingsPage->getSynchronizeWithModelWidgetCheckBox()->isChecked();
   if (synchronizeWithModelWidget == OptionsDefaults::GeneralSettings::synchronizeWithModelWidget) {
@@ -1643,7 +1643,7 @@ void OptionsDialog::saveGeneralSettings()
   } else {
     mpSettings->setValue("synchronizeWithModelWidget", synchronizeWithModelWidget);
   }
-  MainWindow::instance()->getLibraryWidget()->getTreeSearchFilters()->getScrollToActiveButton()->setVisible(!synchronizeWithModelWidget);
+  MainWindowServices::instance()->getLibraryWidget()->getTreeSearchFilters()->getScrollToActiveButton()->setVisible(!synchronizeWithModelWidget);
   // save auto save
   bool enableAutoSave = mpGeneralSettingsPage->getEnableAutoSaveGroupBox()->isChecked();
   if (enableAutoSave == OptionsDefaults::GeneralSettings::enableAutoSave) {
@@ -1657,17 +1657,17 @@ void OptionsDialog::saveGeneralSettings()
   } else {
     mpSettings->setValue("autoSave/interval", autoSaveInterval);
   }
-  MainWindow::instance()->getAutoSaveTimer()->setInterval(autoSaveInterval * 1000);
-  MainWindow::instance()->toggleAutoSave();
+  MainWindowServices::instance()->getAutoSaveTimer()->setInterval(autoSaveInterval * 1000);
+  MainWindowServices::instance()->toggleAutoSave();
   // save welcome page
   int welcomePageView = mpGeneralSettingsPage->getWelcomePageView();
   switch (welcomePageView) {
     case 2:
-      MainWindow::instance()->getWelcomePageWidget()->getSplitter()->setOrientation(Qt::Vertical);
+      MainWindowServices::instance()->getWelcomePageWidget()->getSplitter()->setOrientation(Qt::Vertical);
       break;
     case 1:
     default:
-      MainWindow::instance()->getWelcomePageWidget()->getSplitter()->setOrientation(Qt::Horizontal);
+      MainWindowServices::instance()->getWelcomePageWidget()->getSplitter()->setOrientation(Qt::Horizontal);
       break;
   }
   if (welcomePageView == OptionsDefaults::GeneralSettings::welcomePageView) {
@@ -1678,11 +1678,11 @@ void OptionsDialog::saveGeneralSettings()
   bool showLatestNews = mpGeneralSettingsPage->getShowLatestNewsCheckBox()->isChecked();
   int recentFilesSize = mpSettings->value("welcomePage/recentFilesSize").toInt();
   int recentFilesAndLatestNewsSize = mpGeneralSettingsPage->getRecentFilesAndLatestNewsSizeSpinBox()->value();
-  if ((MainWindow::instance()->getWelcomePageWidget()->getLatestNewsFrame()->isHidden() && showLatestNews) || recentFilesSize != recentFilesAndLatestNewsSize) {
-    MainWindow::instance()->getWelcomePageWidget()->getLatestNewsFrame()->show();
-    MainWindow::instance()->getWelcomePageWidget()->addLatestNewsListItems();
+  if ((MainWindowServices::instance()->getWelcomePageWidget()->getLatestNewsFrame()->isHidden() && showLatestNews) || recentFilesSize != recentFilesAndLatestNewsSize) {
+    MainWindowServices::instance()->getWelcomePageWidget()->getLatestNewsFrame()->show();
+    MainWindowServices::instance()->getWelcomePageWidget()->addLatestNewsListItems();
   } else if (!showLatestNews) {
-    MainWindow::instance()->getWelcomePageWidget()->getLatestNewsFrame()->hide();
+    MainWindowServices::instance()->getWelcomePageWidget()->getLatestNewsFrame()->hide();
   }
   if (showLatestNews == OptionsDefaults::GeneralSettings::showLatestNews) {
     mpSettings->remove("welcomePage/showLatestNews");
@@ -1695,7 +1695,7 @@ void OptionsDialog::saveGeneralSettings()
   } else {
     mpSettings->setValue("welcomePage/recentFilesSize", recentFilesAndLatestNewsSize);
   }
-  MainWindow::instance()->updateRecentFileActionsAndList();
+  MainWindowServices::instance()->updateRecentFileActionsAndList();
   // save replaceable support
   bool replaceableSupport = mpGeneralSettingsPage->getReplaceableSupport();
   if (replaceableSupport == OptionsDefaults::GeneralSettings::replaceableSupport) {
@@ -1718,7 +1718,7 @@ void OptionsDialog::saveNFAPISettings()
     mpSettings->setValue("simulation/nfAPINoise", displayNFAPIErrorsWarnings);
   }
   if (displayNFAPIErrorsWarnings) {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("-d=nfAPINoise");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("-d=nfAPINoise");
   }
   // save nfAPI
   bool enableNewInstantiationAPI = mpGeneralSettingsPage->getEnableNewInstantiationAPICheckBox()->isChecked();
@@ -1728,7 +1728,7 @@ void OptionsDialog::saveNFAPISettings()
     mpSettings->setValue("simulation/nfAPI", enableNewInstantiationAPI);
   }
   if (enableNewInstantiationAPI) {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("-d=nfAPI");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("-d=nfAPI");
   }
 }
 
@@ -1739,8 +1739,8 @@ void OptionsDialog::saveLibrariesSettings()
   const QString modelicaPath = mpLibrariesPage->getModelicaPathTextBox()->text();
   if (modelicaPath.isEmpty() || modelicaPath.compare(Helper::ModelicaPath) == 0) {
     mpSettings->remove("modelicaPath-1");
-    MainWindow::instance()->getOMCProxy()->setModelicaPath(Helper::ModelicaPath);
-  } else if (MainWindow::instance()->getOMCProxy()->setModelicaPath(modelicaPath)) {
+    MainWindowServices::instance()->getOMCProxy()->setModelicaPath(Helper::ModelicaPath);
+  } else if (MainWindowServices::instance()->getOMCProxy()->setModelicaPath(modelicaPath)) {
     mpSettings->setValue("modelicaPath-1", modelicaPath);
   }
   // save load latest Modelica
@@ -2154,11 +2154,11 @@ void OptionsDialog::saveGraphicalViewsSettings()
   QString modelingViewMode = mpGraphicalViewsPage->getModelingViewMode();
   if (modelingViewMode.compare(Helper::tabbed) == 0) {
     mpSettings->remove("modeling/viewmode");
-    MainWindow::instance()->getModelWidgetContainer()->setViewMode(QMdiArea::TabbedView);
+    MainWindowServices::instance()->getModelWidgetContainer()->setViewMode(QMdiArea::TabbedView);
   } else {
     mpSettings->setValue("modeling/viewmode", modelingViewMode);
-    MainWindow::instance()->getModelWidgetContainer()->setViewMode(QMdiArea::SubWindowView);
-    ModelWidget *pModelWidget = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget();
+    MainWindowServices::instance()->getModelWidgetContainer()->setViewMode(QMdiArea::SubWindowView);
+    ModelWidget *pModelWidget = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget();
     if (pModelWidget) {
       pModelWidget->show();
       pModelWidget->setWindowState(Qt::WindowMaximized);
@@ -2296,7 +2296,7 @@ void OptionsDialog::saveGraphicalViewsSettings()
 void OptionsDialog::saveSimulationSettings()
 {
   // clear command line options before saving new ones
-  MainWindow::instance()->getOMCProxy()->clearCommandLineOptions();
+  MainWindowServices::instance()->getOMCProxy()->clearCommandLineOptions();
   bool changed = false;
   SimulationOptions simulationOptions;
   // save matching algorithm
@@ -2476,7 +2476,7 @@ void OptionsDialog::saveGlobalSimulationSettings()
   } else {
     mpSettings->setValue("simulation/targetLanguage", targetLanguage);
   }
-  MainWindow::instance()->getOMCProxy()->setCommandLineOptions(QString("--simCodeTarget=%1").arg(targetLanguage));
+  MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions(QString("--simCodeTarget=%1").arg(targetLanguage));
   // save target build
   QString target = mpSimulationPage->getTargetBuildComboBox()->itemData(mpSimulationPage->getTargetBuildComboBox()->currentIndex()).toString();
   if (target.compare(OptionsDefaults::Simulation::targetBuild) == 0) {
@@ -2484,7 +2484,7 @@ void OptionsDialog::saveGlobalSimulationSettings()
   } else {
     mpSettings->setValue("simulation/targetCompiler", target);
   }
-  MainWindow::instance()->getOMCProxy()->setCommandLineOptions(QString("--target=%1").arg(target));
+  MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions(QString("--target=%1").arg(target));
   // save compiler
   QString compiler = mpSimulationPage->getCompilerComboBox()->lineEdit()->text();
   if (compiler.isEmpty() || compiler.compare(OptionsDefaults::Simulation::cCompiler) == 0) {
@@ -2495,7 +2495,7 @@ void OptionsDialog::saveGlobalSimulationSettings()
   if (compiler.isEmpty()) {
     compiler = mpSimulationPage->getCompilerComboBox()->lineEdit()->placeholderText();
   }
-  MainWindow::instance()->getOMCProxy()->setCompiler(compiler);
+  MainWindowServices::instance()->getOMCProxy()->setCompiler(compiler);
   // save cxxcompiler
   QString cxxCompiler = mpSimulationPage->getCXXCompilerComboBox()->lineEdit()->text();
   if (cxxCompiler.isEmpty() || cxxCompiler.compare(OptionsDefaults::Simulation::cxxCompiler) == 0) {
@@ -2506,7 +2506,7 @@ void OptionsDialog::saveGlobalSimulationSettings()
   if (cxxCompiler.isEmpty()) {
     cxxCompiler = mpSimulationPage->getCXXCompilerComboBox()->lineEdit()->placeholderText();
   }
-  MainWindow::instance()->getOMCProxy()->setCXXCompiler(cxxCompiler);
+  MainWindowServices::instance()->getOMCProxy()->setCXXCompiler(cxxCompiler);
 #ifdef Q_OS_WIN
   // static linking
   bool useStaticLinking = mpSimulationPage->getUseStaticLinkingCheckBox()->isChecked();
@@ -2531,9 +2531,9 @@ void OptionsDialog::saveGlobalSimulationSettings()
     mpSettings->setValue("simulation/ignoreCommandLineOptionsAnnotation", ignoreCommandLineOptionsAnnotation);
   }
   if (mpSimulationPage->getIgnoreCommandLineOptionsAnnotationCheckBox()->isChecked()) {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("+ignoreCommandLineOptionsAnnotation=true");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("+ignoreCommandLineOptionsAnnotation=true");
   } else {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("+ignoreCommandLineOptionsAnnotation=false");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("+ignoreCommandLineOptionsAnnotation=false");
   }
   // save ignore simulation flags
   bool ignoreSimulationFlagsAnnotation = mpSimulationPage->getIgnoreSimulationFlagsAnnotationCheckBox()->isChecked();
@@ -2543,9 +2543,9 @@ void OptionsDialog::saveGlobalSimulationSettings()
     mpSettings->setValue("simulation/ignoreSimulationFlagsAnnotation", ignoreSimulationFlagsAnnotation);
   }
   if (mpSimulationPage->getIgnoreSimulationFlagsAnnotationCheckBox()->isChecked()) {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("+ignoreSimulationFlagsAnnotation=true");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("+ignoreSimulationFlagsAnnotation=true");
   } else {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("+ignoreSimulationFlagsAnnotation=false");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("+ignoreSimulationFlagsAnnotation=false");
   }
 }
 
@@ -2757,11 +2757,11 @@ void OptionsDialog::savePlottingSettings()
   QString plottingViewMode = mpPlottingPage->getPlottingViewMode();
   if (mpPlottingPage->getPlottingViewMode().compare(Helper::tabbed) == 0) {
     mpSettings->remove("plotting/viewmode");
-    MainWindow::instance()->getPlotWindowContainer()->setViewMode(QMdiArea::TabbedView);
+    MainWindowServices::instance()->getPlotWindowContainer()->setViewMode(QMdiArea::TabbedView);
   } else {
     mpSettings->setValue("plotting/viewmode", plottingViewMode);
-    MainWindow::instance()->getPlotWindowContainer()->setViewMode(QMdiArea::SubWindowView);
-    OMPlot::PlotWindow *pPlotWindow = MainWindow::instance()->getPlotWindowContainer()->getCurrentWindow();
+    MainWindowServices::instance()->getPlotWindowContainer()->setViewMode(QMdiArea::SubWindowView);
+    OMPlot::PlotWindow *pPlotWindow = MainWindowServices::instance()->getPlotWindowContainer()->getCurrentWindow();
     if (pPlotWindow) {
       pPlotWindow->show();
       pPlotWindow->setWindowState(Qt::WindowMaximized);
@@ -2788,7 +2788,7 @@ void OptionsDialog::savePlottingSettings()
   } else {
     mpSettings->setValue("variableFilter/interval", variableFilterInterval);
   }
-  MainWindow::instance()->getVariablesWidget()->getTreeSearchFilters()->getFilterTimer()->setInterval(mpPlottingPage->getFilterIntervalSpinBox()->value() * 1000);
+  MainWindowServices::instance()->getVariablesWidget()->getTreeSearchFilters()->getFilterTimer()->setInterval(mpPlottingPage->getFilterIntervalSpinBox()->value() * 1000);
   // save plot font sizes
   double titleFontSize = mpPlottingPage->getTitleFontSizeSpinBox()->value();
   if (qFuzzyCompare(titleFontSize, OptionsDefaults::Plotting::titleFontSize)) {
@@ -2905,7 +2905,7 @@ void OptionsDialog::saveDebuggerSettings()
   } else {
     mpSettings->setValue("displayUnknownFrames", displayUnknownFrames);
   }
-  MainWindow::instance()->getStackFramesWidget()->getStackFramesTreeWidget()->updateStackFrames();
+  MainWindowServices::instance()->getStackFramesWidget()->getStackFramesTreeWidget()->updateStackFrames();
 
   bool clearOutputOnNewRun = mpDebuggerPage->getClearOutputOnNewRunCheckBox()->isChecked();
   if (clearOutputOnNewRun == OptionsDefaults::Debugger::clearOutputOnNewRun) {
@@ -2937,7 +2937,7 @@ void OptionsDialog::saveDebuggerSettings()
     mpSettings->setValue("generateOperations", generateOperations);
   }
   if (mpDebuggerPage->getGenerateOperationsCheckBox()->isChecked()) {
-    MainWindow::instance()->getOMCProxy()->setCommandLineOptions("-d=infoXmlOperations");
+    MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions("-d=infoXmlOperations");
   }
   mpSettings->endGroup();
 }
@@ -3546,7 +3546,7 @@ GeneralSettingsPage::GeneralSettingsPage(OptionsDialog *pOptionsDialog)
   }
   // Working Directory
   mpWorkingDirectoryLabel = new Label(Helper::workingDirectory);
-  OptionsDefaults::GeneralSettings::workingDirectory = MainWindow::instance()->getOMCProxy()->changeDirectory();
+  OptionsDefaults::GeneralSettings::workingDirectory = MainWindowServices::instance()->getOMCProxy()->changeDirectory();
   mpWorkingDirectoryTextBox = new QLineEdit;
   mpWorkingDirectoryTextBox->setPlaceholderText(OptionsDefaults::GeneralSettings::workingDirectory);
   mpWorkingDirectoryBrowseButton = new QPushButton(Helper::browse);
@@ -4073,7 +4073,7 @@ bool AddSystemLibraryDialog::nameExists(QTreeWidgetItem *pItem)
 void AddSystemLibraryDialog::getSystemLibraries()
 {
   mpNameComboBox->clear();
-  mpNameComboBox->addItems(MainWindow::instance()->getOMCProxy()->getAvailableLibraries());
+  mpNameComboBox->addItems(MainWindowServices::instance()->getOMCProxy()->getAvailableLibraries());
   getLibraryVersions(mpNameComboBox->currentText());
 }
 
@@ -4086,7 +4086,7 @@ void AddSystemLibraryDialog::getLibraryVersions(const QString &library)
 {
   mpVersionsComboBox->clear();
   if (!library.isEmpty()) {
-    mpVersionsComboBox->addItems(MainWindow::instance()->getOMCProxy()->getAvailableLibraryVersions(library));
+    mpVersionsComboBox->addItems(MainWindowServices::instance()->getOMCProxy()->getAvailableLibraryVersions(library));
   }
 }
 
@@ -4135,7 +4135,7 @@ void AddSystemLibraryDialog::addSystemLibrary()
  */
 void AddSystemLibraryDialog::openInstallLibraryDialog()
 {
-  if (MainWindow::instance()->openInstallLibraryDialog()) {
+  if (MainWindowServices::instance()->openInstallLibraryDialog()) {
     getSystemLibraries();
   }
 }
@@ -5494,7 +5494,7 @@ SimulationPage::SimulationPage(OptionsDialog *pOptionsDialog)
   mpTranslationFlagsGroupBox->setLayout(pTranslationFlagsGridLayout);
   // Target Language
   mpTargetLanguageLabel = new Label(tr("Target Language:"));
-  OMCInterface::getConfigFlagValidOptions_res simCodeTarget = MainWindow::instance()->getOMCProxy()->getConfigFlagValidOptions("simCodeTarget");
+  OMCInterface::getConfigFlagValidOptions_res simCodeTarget = MainWindowServices::instance()->getOMCProxy()->getConfigFlagValidOptions("simCodeTarget");
   mpTargetLanguageComboBox = new QComboBox;
   mpTargetLanguageComboBox->addItems(simCodeTarget.validOptions);
   mpTargetLanguageComboBox->setCurrentIndex(mpTargetLanguageComboBox->findText("C"));
@@ -5525,7 +5525,7 @@ SimulationPage::SimulationPage(OptionsDialog *pOptionsDialog)
 #ifdef Q_OS_UNIX
   mpCompilerComboBox->addItem("clang");
 #endif
-  OptionsDefaults::Simulation::cCompiler = MainWindow::instance()->getOMCProxy()->getCompiler();
+  OptionsDefaults::Simulation::cCompiler = MainWindowServices::instance()->getOMCProxy()->getCompiler();
   mpCompilerComboBox->lineEdit()->setPlaceholderText(OptionsDefaults::Simulation::cCompiler);
   // CXX Compiler
   mpCXXCompilerLabel = new Label(tr("CXX Compiler:"));
@@ -5536,7 +5536,7 @@ SimulationPage::SimulationPage(OptionsDialog *pOptionsDialog)
 #ifdef Q_OS_UNIX
   mpCXXCompilerComboBox->addItem("clang++");
 #endif
-  OptionsDefaults::Simulation::cxxCompiler = MainWindow::instance()->getOMCProxy()->getCXXCompiler();
+  OptionsDefaults::Simulation::cxxCompiler = MainWindowServices::instance()->getOMCProxy()->getCXXCompiler();
   mpCXXCompilerComboBox->lineEdit()->setPlaceholderText(OptionsDefaults::Simulation::cxxCompiler);
 #ifdef Q_OS_WIN
   mpUseStaticLinkingCheckBox = new QCheckBox(tr("Use static Linking"));
@@ -6676,7 +6676,7 @@ FMIPage::FMIPage(OptionsDialog *pOptionsDialog)
   mpSolverForCoSimulationComboBox->addItem(tr("Explicit Euler"), "");
   mpSolverForCoSimulationComboBox->addItem(tr("CVODE"), "cvode");
   // Model description filters
-  OMCInterface::getConfigFlagValidOptions_res fmiFilters = MainWindow::instance()->getOMCProxy()->getConfigFlagValidOptions("fmiFilter");
+  OMCInterface::getConfigFlagValidOptions_res fmiFilters = MainWindowServices::instance()->getOMCProxy()->getConfigFlagValidOptions("fmiFilter");
   mpModelDescriptionFiltersComboBox = new QComboBox;
   mpModelDescriptionFiltersComboBox->addItems(fmiFilters.validOptions);
   mpModelDescriptionFiltersComboBox->setCurrentIndex(mpModelDescriptionFiltersComboBox->findText(OptionsDefaults::FMI::modelDescriptionFilter));
@@ -7103,7 +7103,7 @@ DiscardLocalTranslationFlagsDialog::DiscardLocalTranslationFlagsDialog(QWidget *
   mpClassesWithLocalTranslationFlagsListWidget->setObjectName("ClassesWithLocalTranslationFlagsListWidget");
   mpClassesWithLocalTranslationFlagsListWidget->setItemDelegate(new ItemDelegate(mpClassesWithLocalTranslationFlagsListWidget));
   connect(mpClassesWithLocalTranslationFlagsListWidget, SIGNAL(itemDoubleClicked(QListWidgetItem*)), SLOT(showLocalTranslationFlags(QListWidgetItem*)));
-  listLocalTranslationFlagsClasses(MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem());
+  listLocalTranslationFlagsClasses(MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem());
   QCheckBox *pSelectUnSelectAll = new QCheckBox(tr("Select/Unselect All"));
   pSelectUnSelectAll->setChecked(true);
   connect(pSelectUnSelectAll, SIGNAL(toggled(bool)), SLOT(selectUnSelectAll(bool)));
@@ -7178,7 +7178,7 @@ void DiscardLocalTranslationFlagsDialog::discardLocalTranslationFlags()
   for (int i = 0; i < mpClassesWithLocalTranslationFlagsListWidget->count(); i++) {
     QListWidgetItem *pClassWithLocalTranslationFlags = mpClassesWithLocalTranslationFlagsListWidget->item(i);
     if (pClassWithLocalTranslationFlags->checkState() == Qt::Checked) {
-      LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(pClassWithLocalTranslationFlags->text());
+      LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(pClassWithLocalTranslationFlags->text());
       if (pLibraryTreeItem) {
         pLibraryTreeItem->mSimulationOptions.setIsValid(false);
         pLibraryTreeItem->mSimulationOptions.setDataReconciliationInitialized(false);
@@ -7190,7 +7190,7 @@ void DiscardLocalTranslationFlagsDialog::discardLocalTranslationFlags()
 
 void DiscardLocalTranslationFlagsDialog::showLocalTranslationFlags(QListWidgetItem *pListWidgetItem)
 {
-  LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(pListWidgetItem->text());
+  LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(pListWidgetItem->text());
   if (pLibraryTreeItem) {
     QDialog *pLocalTranslationFlagsDialog = new QDialog;
     pLocalTranslationFlagsDialog->setWindowTitle(QString("%1 - Local Translation Flags - %2").arg(Helper::applicationName, pLibraryTreeItem->getNameStructure()));

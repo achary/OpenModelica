@@ -149,7 +149,7 @@ OMEditApplication::OMEditApplication(int &argc, char **argv, threadData_t* threa
     }
   }
   // MainWindow Initialization
-  MainWindow *pMainwindow = MainWindow::instance();
+  MainWindowServices *pMainwindow = MainWindowServices::instance();
   pMainwindow->setDebug(debug);
   pMainwindow->setNewApi(newApi);
   pMainwindow->setTestsuiteRunning(testsuiteRunning);

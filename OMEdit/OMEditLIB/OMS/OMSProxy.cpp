@@ -167,11 +167,11 @@ void OMSProxy::logResponse(QString command, oms_status_enu_t status, QElapsedTim
   }
 
   // flush the logs if --Debug=true
-  if (MainWindow::instance()->isDebug()) {
+  if (MainWindowServices::instance()->isDebug()) {
     fflush(NULL);
   }
 
-  MainWindow::instance()->printStandardOutAndErrorFilesMessages();
+  MainWindowServices::instance()->printStandardOutAndErrorFilesMessages();
 }
 
 /*!

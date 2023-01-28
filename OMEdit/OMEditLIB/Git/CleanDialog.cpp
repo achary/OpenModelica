@@ -69,7 +69,7 @@ CleanDialog::CleanDialog(QWidget *pParent)
 
 void CleanDialog::getUntrackedFiles()
 {
-  QString fileName = MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
+  QString fileName = MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget()->getLibraryTreeItem()->getFileName();
   QString workingDirectory = GitCommands::instance()->getRepositoryName(fileName);
   QStringList untrackedFiles = GitCommands::instance()->getUntrackedFiles(fileName);
 

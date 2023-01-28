@@ -51,14 +51,14 @@ TranslationFlagsWidget::TranslationFlagsWidget(QWidget *pParent)
   // Matching Algorithm
   mpMatchingAlgorithmLabel = new Label(tr("Matching Algorithm:"));
   OMCInterface::getAvailableMatchingAlgorithms_res matchingAlgorithms;
-  matchingAlgorithms = MainWindow::instance()->getOMCProxy()->getAvailableMatchingAlgorithms();
+  matchingAlgorithms = MainWindowServices::instance()->getOMCProxy()->getAvailableMatchingAlgorithms();
   mpMatchingAlgorithmComboBox = new QComboBox;
   mpMatchingAlgorithmComboBox->addItems(matchingAlgorithms.allChoices);
   Utilities::setToolTip(mpMatchingAlgorithmComboBox, "Matching Algorithms", matchingAlgorithms.allComments);
   // Index Reduction Method
   mpIndexReductionMethodLabel = new Label(tr("Index Reduction Method:"));
   OMCInterface::getAvailableIndexReductionMethods_res indexReductionMethods;
-  indexReductionMethods = MainWindow::instance()->getOMCProxy()->getAvailableIndexReductionMethods();
+  indexReductionMethods = MainWindowServices::instance()->getOMCProxy()->getAvailableIndexReductionMethods();
   mpIndexReductionMethodComboBox = new QComboBox;
   mpIndexReductionMethodComboBox->addItems(indexReductionMethods.allChoices);
   Utilities::setToolTip(mpIndexReductionMethodComboBox, "Index Reduction Methods", indexReductionMethods.allComments);
@@ -146,7 +146,7 @@ void TranslationFlagsWidget::createSimulationOptions(SimulationOptions *pSimulat
  */
 bool TranslationFlagsWidget::applyFlags()
 {
-  if (!MainWindow::instance()->getOMCProxy()->setCommandLineOptions(commandLineOptions())) {
+  if (!MainWindowServices::instance()->getOMCProxy()->setCommandLineOptions(commandLineOptions())) {
     return false;
   }
   return true;

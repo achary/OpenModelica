@@ -61,7 +61,7 @@ SearchWidget::SearchWidget(QWidget *pParent)
   Label *pSearchFilePatternLabel = new Label(tr("File Pattern:"));
   // scope combobox
   mpSearchScopeComboBox = new QComboBox;
-  mpSearchScopeComboBox->setModel(MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel());
+  mpSearchScopeComboBox->setModel(MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel());
   // search string combobox
   mpSearchStringComboBox = new QComboBox;
   mpSearchStringComboBox->setEditable(true);
@@ -337,7 +337,7 @@ void SearchResultWidget::findAndOpenTreeWidgetItems(QTreeWidgetItem *item, int c
     SearchFileDetails filedetails = qvariant_cast<SearchFileDetails>(value);
     if (!filedetails.mSearchLines.isEmpty()) {
       QString line = QString::number(filedetails.mSearchLines.begin().key());
-      MainWindow::instance()->findFileAndGoToLine(filedetails.mFileName, line);
+      MainWindowServices::instance()->findFileAndGoToLine(filedetails.mFileName, line);
     }
   }
 }
@@ -461,8 +461,8 @@ Search::Search(QObject *parent):
 void Search::run()
 {
   mStop = false;
-  SearchWidget *pSearchWidget = MainWindow::instance()->getSearchWidget();
-  LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+  SearchWidget *pSearchWidget = MainWindowServices::instance()->getSearchWidget();
+  LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
   QStringList filelist;
   QString searchString = pSearchWidget->getSearchStringComboBox()->currentText();
   QStringList pattern= pSearchWidget->getSearchFilePatternComboBox()->currentText().split(',');

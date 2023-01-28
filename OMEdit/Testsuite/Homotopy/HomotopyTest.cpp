@@ -48,7 +48,7 @@ OMEDITTEST_MAIN(HomotopyTest)
 
 void HomotopyTest::initTestCase()
 {
-  MainWindow::instance()->getLibraryWidget()->openFile(QFINDTESTDATA("HomotopyTest.mo"));
+  MainWindowServices::instance()->getLibraryWidget()->openFile(QFINDTESTDATA("HomotopyTest.mo"));
 }
 
 void HomotopyTest::simulateHomotopyTestM1()
@@ -63,17 +63,17 @@ void HomotopyTest::simulateHomotopyTestM2()
 
 void HomotopyTest::cleanupTestCase()
 {
-  MainWindow::instance()->close();
+  MainWindowServices::instance()->close();
 }
 
 void HomotopyTest::simulate(const QString &className)
 {
-  LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(className);
+  LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->findLibraryTreeItem(className);
   if (!Util::expandLibraryTreeItemParentHierarchy(pLibraryTreeItem)) {
     QFAIL(QString("Expanding to %1 failed.").arg(className).toStdString().c_str());
   }
 
-  MainWindow::instance()->simulate(pLibraryTreeItem);
+  MainWindowServices::instance()->simulate(pLibraryTreeItem);
   SimulationOutputWidget *pSimulationOutputWidget = MessagesWidget::instance()->getSimulationOutputWidget(className);
   if (pSimulationOutputWidget) {
     if (pSimulationOutputWidget->getSimulationOptions().getClassName().compare(className) == 0) {

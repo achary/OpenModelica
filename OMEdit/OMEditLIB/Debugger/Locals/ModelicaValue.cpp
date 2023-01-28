@@ -77,7 +77,7 @@ ModelicaRecordValue::ModelicaRecordValue(LocalsTreeItem *pLocalsTreeItem)
 void ModelicaRecordValue::retrieveChildrenSize()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-  StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+  StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
   pGDBAdapter->postCommand(CommandFactory::arrayLength(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                        mpLocalsTreeItem->getName()),
                            GDBAdapter::BlockUntilResponse, this, &GDBAdapter::arrayLengthCB);
@@ -97,7 +97,7 @@ void ModelicaRecordValue::retrieveChildren()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
   for (int i = 2 ; i <= getRecordElements() ; i++) {
-    StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+    StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
     QByteArray cmd = CommandFactory::getMetaTypeElement(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                         mpLocalsTreeItem->getName(), i, CommandFactory::record_metaType);
     pGDBAdapter->postCommand(cmd, GDBAdapter::BlockUntilResponse, mpLocalsTreeItem, &GDBAdapter::getMetaTypeElementCB);
@@ -113,7 +113,7 @@ ModelicaListValue::ModelicaListValue(LocalsTreeItem *pLocalsTreeItem)
 void ModelicaListValue::retrieveChildrenSize()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-  StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+  StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
   pGDBAdapter->postCommand(CommandFactory::listLength(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                       mpLocalsTreeItem->getName()),
                            GDBAdapter::BlockUntilResponse, this, &GDBAdapter::arrayLengthCB);
@@ -134,7 +134,7 @@ void ModelicaListValue::retrieveChildren()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
   for (int i = 1 ; i <= getListLength() ; i++) {
-    StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+    StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
     QByteArray cmd = CommandFactory::getMetaTypeElement(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                         mpLocalsTreeItem->getName(), i, CommandFactory::list_metaType);
     pGDBAdapter->postCommand(cmd, GDBAdapter::BlockUntilResponse, mpLocalsTreeItem, &GDBAdapter::getMetaTypeElementCB);
@@ -150,7 +150,7 @@ ModelicaOptionValue::ModelicaOptionValue(LocalsTreeItem *pLocalsTreeItem)
 void ModelicaOptionValue::retrieveChildrenSize()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-  StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+  StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
   pGDBAdapter->postCommand(CommandFactory::isOptionNone(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                         mpLocalsTreeItem->getName()),
                            GDBAdapter::BlockUntilResponse, this, &GDBAdapter::arrayLengthCB);
@@ -175,7 +175,7 @@ void ModelicaOptionValue::retrieveChildren()
 {
   if (!isOptionNone()) {
     GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-    StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+    StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
     QByteArray cmd = CommandFactory::getMetaTypeElement(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                         mpLocalsTreeItem->getName(), 1, CommandFactory::option_metaType);
     pGDBAdapter->postCommand(cmd, GDBAdapter::BlockUntilResponse, mpLocalsTreeItem, &GDBAdapter::getMetaTypeElementCB);
@@ -191,7 +191,7 @@ ModelicaTupleValue::ModelicaTupleValue(LocalsTreeItem *pLocalsTreeItem)
 void ModelicaTupleValue::retrieveChildrenSize()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-  StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+  StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
   pGDBAdapter->postCommand(CommandFactory::arrayLength(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                        mpLocalsTreeItem->getName()),
                            GDBAdapter::BlockUntilResponse, this, &GDBAdapter::arrayLengthCB);
@@ -212,7 +212,7 @@ void ModelicaTupleValue::retrieveChildren()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
   for (int i = 1 ; i <= getTupleElements() ; i++) {
-    StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+    StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
     QByteArray cmd = CommandFactory::getMetaTypeElement(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                         mpLocalsTreeItem->getName(), i, CommandFactory::tuple_metaType);
     pGDBAdapter->postCommand(cmd, GDBAdapter::BlockUntilResponse, mpLocalsTreeItem, &GDBAdapter::getMetaTypeElementCB);
@@ -228,7 +228,7 @@ MetaModelicaArrayValue::MetaModelicaArrayValue(LocalsTreeItem *pLocalsTreeItem)
 void MetaModelicaArrayValue::retrieveChildrenSize()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
-  StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+  StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
   pGDBAdapter->postCommand(CommandFactory::arrayLength(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                        mpLocalsTreeItem->getName()),
                            GDBAdapter::BlockUntilResponse, this, &GDBAdapter::arrayLengthCB);
@@ -249,7 +249,7 @@ void MetaModelicaArrayValue::retrieveChildren()
 {
   GDBAdapter *pGDBAdapter = GDBAdapter::instance();
   for (int i = 1 ; i <= getArrayLength() ; i++) {
-    StackFramesWidget *pStackFramesWidget = MainWindow::instance()->getStackFramesWidget();
+    StackFramesWidget *pStackFramesWidget = MainWindowServices::instance()->getStackFramesWidget();
     QByteArray cmd = CommandFactory::getMetaTypeElement(pStackFramesWidget->getSelectedThread(), pStackFramesWidget->getSelectedFrame(),
                                                         mpLocalsTreeItem->getName(), i, CommandFactory::array_metaType);
     pGDBAdapter->postCommand(cmd, GDBAdapter::BlockUntilResponse, mpLocalsTreeItem, &GDBAdapter::getMetaTypeElementCB);

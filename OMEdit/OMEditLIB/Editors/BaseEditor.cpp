@@ -1231,7 +1231,7 @@ void PlainTextEdit::ensureCursorVisible()
  */
 void PlainTextEdit::toggleBreakpoint(const QString fileName, int lineNumber)
 {
-  BreakpointsTreeModel *pBreakpointsTreeModel = MainWindow::instance()->getBreakpointsWidget()->getBreakpointsTreeModel();
+  BreakpointsTreeModel *pBreakpointsTreeModel = MainWindowServices::instance()->getBreakpointsWidget()->getBreakpointsTreeModel();
   BreakpointMarker *pBreakpointMarker = pBreakpointsTreeModel->findBreakpointMarker(fileName, lineNumber);
   if (!pBreakpointMarker) {
     /* create a breakpoint marker */
@@ -1430,7 +1430,7 @@ void PlainTextEdit::updateCursorPosition()
     }
     // Issue #7753. textCursor().columnNumber() doesn't work when line wrapping is on.
     const int column = textCursor().position() - block.position();
-    Label *pPositionLabel = MainWindow::instance()->getPositionLabel();
+    Label *pPositionLabel = MainWindowServices::instance()->getPositionLabel();
     pPositionLabel->setText(QString("Ln: %1, Col: %2").arg(line).arg(column));
   }
   ensureCursorVisible();
@@ -1696,7 +1696,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *pEvent)
   } else if (pEvent->matches(QKeySequence::Undo)) {
     // ctrl+z is pressed.
     if (mpBaseEditor->getModelWidget()) {
-      MainWindow::instance()->undo();
+      MainWindowServices::instance()->undo();
     } else {
       undo();
     }
@@ -1704,7 +1704,7 @@ void PlainTextEdit::keyPressEvent(QKeyEvent *pEvent)
   } else if (pEvent->matches(QKeySequence::Redo)) {
     // ctrl+y is pressed.
     if (mpBaseEditor->getModelWidget()) {
-      MainWindow::instance()->redo();
+      MainWindowServices::instance()->redo();
     } else {
       redo();
     }
@@ -1884,7 +1884,7 @@ void PlainTextEdit::insertFromMimeData(const QMimeData *source)
     ensureCursorVisible();
     setFocus(Qt::ActiveWindowFocusReason);
   } else if (source->hasFormat(Helper::modelicaFileFormat)) {
-    MainWindow::instance()->openDroppedFile(source);
+    MainWindowServices::instance()->openDroppedFile(source);
   } else {
     QPlainTextEdit::insertFromMimeData(source);
   }
@@ -1897,13 +1897,13 @@ void PlainTextEdit::insertFromMimeData(const QMimeData *source)
  */
 void PlainTextEdit::focusInEvent(QFocusEvent *event)
 {
-  MainWindow::instance()->getAutoSaveTimer()->stop();
+  MainWindowServices::instance()->getAutoSaveTimer()->stop();
   // Issue #8723. If we are editing the documentation then save and close the documentation editing when focus moves to text view.
   if (dynamic_cast<ModelicaEditor*>(mpBaseEditor)
       && mpBaseEditor->getModelWidget()->getLibraryTreeItem()->getLibraryType() == LibraryTreeItem::Modelica
-      && MainWindow::instance()->getDocumentationDockWidget()->isVisible()
-      && MainWindow::instance()->getDocumentationWidget()->isEditingDocumentation()) {
-    MainWindow::instance()->getDocumentationWidget()->showDocumentation(mpBaseEditor->getModelWidget()->getLibraryTreeItem());
+      && MainWindowServices::instance()->getDocumentationDockWidget()->isVisible()
+      && MainWindowServices::instance()->getDocumentationWidget()->isEditingDocumentation()) {
+    MainWindowServices::instance()->getDocumentationWidget()->showDocumentation(mpBaseEditor->getModelWidget()->getLibraryTreeItem());
   }
   QPlainTextEdit::focusInEvent(event);
 }
@@ -1918,9 +1918,9 @@ void PlainTextEdit::focusOutEvent(QFocusEvent *event)
   /* The user might start editing the document and then minimize the OMEdit window.
    * We should only start the autosavetimer when MainWindow is the active window and focusOutEvent is called.
    */
-  if (MainWindow::instance()->isActiveWindow()) {
+  if (MainWindowServices::instance()->isItActiveWindow()) {
     if (OptionsDialog::instance()->getGeneralSettingsPage()->getEnableAutoSaveGroupBox()->isChecked()) {
-      MainWindow::instance()->getAutoSaveTimer()->start();
+      MainWindowServices::instance()->getAutoSaveTimer()->start();
     }
   }
   QPlainTextEdit::focusOutEvent(event);
@@ -2201,8 +2201,8 @@ QMenu* BaseEditor::createStandardContextMenu()
   //  QMenu *pMenu = mpPlainTextEdit->createStandardContextMenu();
   QMenu *pMenu = new QMenu;
   if (mpModelWidget) {
-    pMenu->addAction(MainWindow::instance()->getUndoAction());
-    pMenu->addAction(MainWindow::instance()->getRedoAction());
+    pMenu->addAction(MainWindowServices::instance()->getUndoAction());
+    pMenu->addAction(MainWindowServices::instance()->getRedoAction());
   } else {
     QAction *pUndoAction = pMenu->addAction(tr("Undo"), mpPlainTextEdit, SLOT(undo()));
     pUndoAction->setIcon(ResourceCache::getIcon(":/Resources/icons/undo.svg"));
@@ -2274,9 +2274,9 @@ QMenu* BaseEditor::createStandardContextMenu()
     pMenu->addAction(mpZoomInAction);
     pMenu->addAction(mpZoomOutAction);
   } else {
-    pMenu->addAction(MainWindow::instance()->getResetZoomAction());
-    pMenu->addAction(MainWindow::instance()->getZoomInAction());
-    pMenu->addAction(MainWindow::instance()->getZoomOutAction());
+    pMenu->addAction(MainWindowServices::instance()->getResetZoomAction());
+    pMenu->addAction(MainWindowServices::instance()->getZoomInAction());
+    pMenu->addAction(MainWindowServices::instance()->getZoomOutAction());
   }
   return pMenu;
 }
@@ -2289,7 +2289,7 @@ void BaseEditor::contentsChanged()
 {
   mpModelWidget->setWindowTitle(QString("%1*").arg(mpModelWidget->getLibraryTreeItem()->getName()));
   mpModelWidget->getLibraryTreeItem()->setIsSaved(false);
-  MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->updateLibraryTreeItem(mpModelWidget->getLibraryTreeItem());
+  MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->updateLibraryTreeItem(mpModelWidget->getLibraryTreeItem());
 }
 
 /*!

@@ -153,14 +153,14 @@ void CreateModelDialog::createNewModel()
   if (OMSProxy::instance()->newModel(mpNameTextBox->text())) {
     QString systemNameStructure = QString("%1.%2").arg(mpNameTextBox->text(), mpSystemWidget->getNameTextBox()->text());
     if (OMSProxy::instance()->addSystem(systemNameStructure, (oms_system_enu_t)mpSystemWidget->getTypeComboBox()->itemData(mpSystemWidget->getTypeComboBox()->currentIndex()).toInt())) {
-      LibraryTreeModel *pLibraryTreeModel = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel();
+      LibraryTreeModel *pLibraryTreeModel = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel();
       LibraryTreeItem *pLibraryTreeItem = pLibraryTreeModel->createLibraryTreeItem(mpNameTextBox->text(), mpNameTextBox->text(), "", false, pLibraryTreeModel->getRootLibraryTreeItem());
       if (pLibraryTreeItem) {
         pLibraryTreeModel->showModelWidget(pLibraryTreeItem);
         // expand the ssp model
         QModelIndex modelIndex = pLibraryTreeModel->libraryTreeItemIndex(pLibraryTreeItem);
-        QModelIndex proxyIndex = MainWindow::instance()->getLibraryWidget()->getLibraryTreeProxyModel()->mapFromSource(modelIndex);
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeView()->expand(proxyIndex);
+        QModelIndex proxyIndex = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeProxyModel()->mapFromSource(modelIndex);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeView()->expand(proxyIndex);
         // open the root system inside it
         if (pLibraryTreeItem->childrenSize() > 0) {
           LibraryTreeItem *pRootSystemLibraryTreeItem  = pLibraryTreeItem->childAt(0);
@@ -341,7 +341,7 @@ QString AddSubModelDialog::browseSubModelPath(GraphicsView *pGraphicsView, QStri
   if (!pGraphicsView->getModelWidget()->getLibraryTreeItem()->isTLMSystem()) {
     fileTypes = Helper::subModelFileTypes;
   }
-  QString path = StringHandler::getOpenFileName(MainWindow::instance(), QString("%1 - %2").arg(Helper::applicationName, Helper::chooseFile), NULL, fileTypes, NULL);
+  QString path = StringHandler::getOpenFileName(MainWindowServices::instance()->mainWindowWidget(), QString("%1 - %2").arg(Helper::applicationName, Helper::chooseFile), NULL, fileTypes, NULL);
   QFileInfo fileInfo(path);
   if (fileInfo.exists()) {
     *pName = fileInfo.completeBaseName().replace(QStringLiteral("."), QStringLiteral("_"));

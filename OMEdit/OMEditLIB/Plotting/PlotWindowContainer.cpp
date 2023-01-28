@@ -274,7 +274,7 @@ void PlotWindowContainer::addPlotWindow(bool maximized)
     pPlotWindow->setLegendPosition("top");
     pPlotWindow->setAutoScale(OptionsDialog::instance()->getPlottingPage()->getAutoScaleCheckBox()->isChecked());
     pPlotWindow->setPrefixUnits(OptionsDialog::instance()->getPlottingPage()->getPrefixUnitsCheckbox()->isChecked());
-    pPlotWindow->setTimeUnit(MainWindow::instance()->getVariablesWidget()->getSimulationTimeComboBox()->currentText());
+    pPlotWindow->setTimeUnit(MainWindowServices::instance()->getVariablesWidget()->getSimulationTimeComboBox()->currentText());
     pPlotWindow->setXLabel(QString("time"));
     pPlotWindow->installEventFilter(this);
     QMdiSubWindow *pSubWindow = addSubWindow(pPlotWindow);
@@ -308,7 +308,7 @@ void PlotWindowContainer::addParametricPlotWindow()
     pPlotWindow->setLegendPosition("top");
     pPlotWindow->setAutoScale(OptionsDialog::instance()->getPlottingPage()->getAutoScaleCheckBox()->isChecked());
     pPlotWindow->setPrefixUnits(OptionsDialog::instance()->getPlottingPage()->getPrefixUnitsCheckbox()->isChecked());
-    pPlotWindow->setTimeUnit(MainWindow::instance()->getVariablesWidget()->getSimulationTimeComboBox()->currentText());
+    pPlotWindow->setTimeUnit(MainWindowServices::instance()->getVariablesWidget()->getSimulationTimeComboBox()->currentText());
     pPlotWindow->installEventFilter(this);
     QMdiSubWindow *pSubWindow = addSubWindow(pPlotWindow);
     PlottingPage *pPlottingPage = OptionsDialog::instance()->getPlottingPage();
@@ -339,7 +339,7 @@ void PlotWindowContainer::addArrayPlotWindow(bool maximized)
     pPlotWindow->setLegendPosition("top");
     pPlotWindow->setAutoScale(OptionsDialog::instance()->getPlottingPage()->getAutoScaleCheckBox()->isChecked());
     pPlotWindow->setPrefixUnits(OptionsDialog::instance()->getPlottingPage()->getPrefixUnitsCheckbox()->isChecked());
-    QComboBox* unitComboBox = MainWindow::instance()->getVariablesWidget()->getSimulationTimeComboBox();
+    QComboBox* unitComboBox = MainWindowServices::instance()->getVariablesWidget()->getSimulationTimeComboBox();
     if (unitComboBox->currentText() == ""){
         int currentIndex = unitComboBox->findText("s", Qt::MatchExactly);
         if (currentIndex > -1) {
@@ -382,7 +382,7 @@ PlotWindow* PlotWindowContainer::addInteractivePlotWindow(bool maximized, QStrin
     pPlotWindow->setLegendPosition("top");
     pPlotWindow->setAutoScale(OptionsDialog::instance()->getPlottingPage()->getAutoScaleCheckBox()->isChecked());
     pPlotWindow->setPrefixUnits(OptionsDialog::instance()->getPlottingPage()->getPrefixUnitsCheckbox()->isChecked());
-    pPlotWindow->setTimeUnit(MainWindow::instance()->getVariablesWidget()->getSimulationTimeComboBox()->currentText());
+    pPlotWindow->setTimeUnit(MainWindowServices::instance()->getVariablesWidget()->getSimulationTimeComboBox()->currentText());
     pPlotWindow->setXLabel(QString("time"));
     pPlotWindow->installEventFilter(this);
     QMdiSubWindow *pSubWindow = addSubWindow(pPlotWindow);
@@ -419,7 +419,7 @@ void PlotWindowContainer::addArrayParametricPlotWindow()
     pPlotWindow->setLegendPosition("top");
     pPlotWindow->setAutoScale(OptionsDialog::instance()->getPlottingPage()->getAutoScaleCheckBox()->isChecked());
     pPlotWindow->setPrefixUnits(OptionsDialog::instance()->getPlottingPage()->getPrefixUnitsCheckbox()->isChecked());
-    QComboBox* unitComboBox = MainWindow::instance()->getVariablesWidget()->getSimulationTimeComboBox();
+    QComboBox* unitComboBox = MainWindowServices::instance()->getVariablesWidget()->getSimulationTimeComboBox();
     if (unitComboBox->currentText() == ""){
         int currentIndex = unitComboBox->findText("s", Qt::MatchExactly);
         if (currentIndex > -1) {
@@ -476,7 +476,7 @@ void PlotWindowContainer::addDiagramWindow(ModelWidget *pModelWidget, bool maxim
   if (!mpDiagramWindow) {
     mpDiagramWindow = new DiagramWindow(this);
   }
-  mpDiagramWindow->showVisualizationDiagram(pModelWidget ? pModelWidget : MainWindow::instance()->getModelWidgetContainer()->getCurrentModelWidget());
+  mpDiagramWindow->showVisualizationDiagram(pModelWidget ? pModelWidget : MainWindowServices::instance()->getModelWidgetContainer()->getCurrentModelWidget());
   QMdiSubWindow *pSubWindow = getDiagramSubWindowFromMdi();
   if (!pSubWindow) {
     pSubWindow = addSubWindow(mpDiagramWindow);
@@ -498,7 +498,7 @@ void PlotWindowContainer::removeInteractivePlotWindow()
 {
   PlotWindow *pPlotWindow = qobject_cast<PlotWindow*>(sender());
   QString owner = pPlotWindow->getInteractiveOwner();
-  MainWindow::instance()->getVariablesWidget()->getVariablesTreeModel()->removeVariableTreeItem(owner);
+  MainWindowServices::instance()->getVariablesWidget()->getVariablesTreeModel()->removeVariableTreeItem(owner);
 }
 
 /*!
@@ -521,7 +521,7 @@ void PlotWindowContainer::clearPlotWindow()
     i = 0;   //Restart iteration
   }
   pPlotWindow->fitInView();
-  MainWindow::instance()->getVariablesWidget()->updateVariablesTreeHelper(subWindowList(QMdiArea::ActivationHistoryOrder).last());
+  MainWindowServices::instance()->getVariablesWidget()->updateVariablesTreeHelper(subWindowList(QMdiArea::ActivationHistoryOrder).last());
 }
 
 /*!
@@ -589,7 +589,7 @@ void PlotWindowContainer::exportVariables()
       } else { // otherwise set value to 0.0 but perhaps we should never reach there.
         value = 0.0;
       }
-      OMCInterface::convertUnits_res convertUnit = MainWindow::instance()->getOMCProxy()->convertUnits(pPlotCurve->getYDisplayUnit(), pPlotCurve->getYUnit());
+      OMCInterface::convertUnits_res convertUnit = MainWindowServices::instance()->getOMCProxy()->convertUnits(pPlotCurve->getYDisplayUnit(), pPlotCurve->getYUnit());
       if (convertUnit.unitsCompatible) {
         data << StringHandler::number(Utilities::convertUnit(value, convertUnit.offset, convertUnit.scaleFactor));
       } else {
@@ -599,7 +599,7 @@ void PlotWindowContainer::exportVariables()
     contents.append(data.join(",")).append("\n");
   }
   // create a file
-  if (MainWindow::instance()->getLibraryWidget()->saveFile(fileName, contents)) {
+  if (MainWindowServices::instance()->getLibraryWidget()->saveFile(fileName, contents)) {
     MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica, tr("Exported variables in %1").arg(fileName), Helper::scriptingKind, Helper::notificationLevel));
   }
 }

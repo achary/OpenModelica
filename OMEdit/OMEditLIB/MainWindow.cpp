@@ -82,7 +82,7 @@
 
 #include <QtSvg/QSvgGenerator>
 
-MainWindow *MainWindow::mpInstance = 0;
+extern MainWindowServices* pInstance;
 
 MainWindow::MainWindow(QWidget *parent)
   : QMainWindow(parent), mExitApplicationStatus(false)
@@ -116,21 +116,9 @@ MainWindow::MainWindow(QWidget *parent)
   setMinimumSize(400, 300);
   setContentsMargins(1, 1, 1, 1);
 
-  mpInstance = this;
+  pInstance = this;
 }
 
-/*!
- * \brief MainWindow::instance
- * Creates an instance of MainWindow. If we already have an instance then just return it.
- * \return
- */
-MainWindow *MainWindow::instance()
-{
-  if (!mpInstance) {
-    mpInstance = new MainWindow;
-  }
-  return mpInstance;
-}
 
 /*!
  * \brief MainWindow::setUpMainWindow
@@ -929,7 +917,7 @@ void MainWindow::exportModelFMU(LibraryTreeItem *pLibraryTreeItem)
     QDir().mkpath(modelDirectoryPath);
   }
   // set the folder as working directory
-  MainWindow::instance()->getOMCProxy()->changeDirectory(modelDirectoryPath);
+  MainWindowServices::instance()->getOMCProxy()->changeDirectory(modelDirectoryPath);
   // buildModelFMU parameters
   QString version = OptionsDialog::instance()->getFMIPage()->getFMIExportVersion();
   QString type = OptionsDialog::instance()->getFMIPage()->getFMIExportType();
@@ -981,13 +969,13 @@ void MainWindow::exportModelFMU(LibraryTreeItem *pLibraryTreeItem)
   //trace export FMU
   if (OptionsDialog::instance()->getTraceabilityPage()->getTraceabilityGroupBox()->isChecked() && !fmuFileName.isEmpty()) {
     //Push traceability information automaticaly to Daemon
-    MainWindow::instance()->getCommitChangesDialog()->generateTraceabilityURI("fmuExport", pLibraryTreeItem->getFileName(), pLibraryTreeItem->getNameStructure(), fmuFileName);
+    MainWindowServices::instance()->getCommitChangesDialog()->generateTraceabilityURI("fmuExport", pLibraryTreeItem->getFileName(), pLibraryTreeItem->getNameStructure(), fmuFileName);
   }
   // unset the generate debug symbols flag
   if (OptionsDialog::instance()->getFMIPage()->getGenerateDebugSymbolsCheckBox()->isChecked()) {
     mpOMCProxy->setCommandLineOptions(QString("-d=-gendebugsymbols"));
   }
-  MainWindow::instance()->getOMCProxy()->changeDirectory(OptionsDialog::instance()->getGeneralSettingsPage()->getWorkingDirectory());
+  MainWindowServices::instance()->getOMCProxy()->changeDirectory(OptionsDialog::instance()->getGeneralSettingsPage()->getWorkingDirectory());
   // hide progress bar
   hideProgressBar();
   // clear the status bar message
@@ -1017,7 +1005,7 @@ void MainWindow::exportEncryptedPackage(LibraryTreeItem *pLibraryTreeItem)
     MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica,
                                                           GUIMessages::getMessage(GUIMessages::ENCRYPTED_PACKAGE_GENERATED)
                                                           .arg(QString("%1/%2.mol")
-                                                               .arg(MainWindow::instance()->getOMCProxy()->changeDirectory())
+                                                               .arg(MainWindowServices::instance()->getOMCProxy()->changeDirectory())
                                                                .arg(pLibraryTreeItem->getNameStructure())),
                                                           Helper::scriptingKind, Helper::notificationLevel));
   }
@@ -1050,7 +1038,7 @@ void MainWindow::exportReadonlyPackage(LibraryTreeItem *pLibraryTreeItem)
     MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica,
                                                           GUIMessages::getMessage(GUIMessages::READONLY_PACKAGE_GENERATED)
                                                           .arg(QString("%1/%2.mol")
-                                                               .arg(MainWindow::instance()->getOMCProxy()->changeDirectory())
+                                                               .arg(MainWindowServices::instance()->getOMCProxy()->changeDirectory())
                                                                .arg(pLibraryTreeItem->getNameStructure())),
                                                           Helper::scriptingKind, Helper::notificationLevel));
   }
@@ -1512,10 +1500,10 @@ void MainWindow::addSystemLibraries()
   if (mpLibrariesMenu) {
     mpLibrariesMenu->clear();
     // get the available libraries and versions.
-    QStringList libraries = MainWindow::instance()->getOMCProxy()->getAvailableLibraries();
+    QStringList libraries = MainWindowServices::instance()->getOMCProxy()->getAvailableLibraries();
     libraries.sort();
     foreach (QString library, libraries) {
-      QStringList versions = MainWindow::instance()->getOMCProxy()->getAvailableLibraryVersions(library);
+      QStringList versions = MainWindowServices::instance()->getOMCProxy()->getAvailableLibraryVersions(library);
       if (versions.isEmpty()) {
         QAction *pAction = new QAction(library, this);
         pAction->setData(QStringList() << library << "");
@@ -1783,7 +1771,7 @@ void MainWindow::showOpenTransformationFileDialog()
  */
 void MainWindow::unloadAll(bool onlyModelicaClasses)
 {
-  LibraryTreeItem *pLibraryTreeItem = MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem();
+  LibraryTreeItem *pLibraryTreeItem = MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem();
   for (int i = pLibraryTreeItem->childrenSize(); --i >= 0; ) {
     LibraryTreeItem *pChildLibraryTreeItem = pLibraryTreeItem->child(i);
     if (pChildLibraryTreeItem) {
@@ -1791,16 +1779,16 @@ void MainWindow::unloadAll(bool onlyModelicaClasses)
           || (pChildLibraryTreeItem->getNameStructure().compare(QStringLiteral("OMEdit.Search.Feature")) == 0)) {
         continue;
       } else if (pChildLibraryTreeItem->getLibraryType() == LibraryTreeItem::Modelica) {
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadClass(pChildLibraryTreeItem, false, false);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadClass(pChildLibraryTreeItem, false, false);
       } else if (!onlyModelicaClasses && pChildLibraryTreeItem->getLibraryType() == LibraryTreeItem::OMS) {
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadOMSModel(pChildLibraryTreeItem, true, false);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadOMSModel(pChildLibraryTreeItem, true, false);
       } else if (!onlyModelicaClasses) { // LibraryTreeItem::CompositeModel or LibraryTreeItem::Text
-        MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadCompositeModelOrTextFile(pChildLibraryTreeItem, false);
+        MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->unloadCompositeModelOrTextFile(pChildLibraryTreeItem, false);
       }
     }
   }
   // clear everything from OMC
-  MainWindow::instance()->getOMCProxy()->clear();
+  MainWindowServices::instance()->getOMCProxy()->clear();
 }
 
 /*!
@@ -2555,7 +2543,7 @@ void MainWindow::updateLibraryIndex(bool forceUpdate)
     mpStatusBar->showMessage(tr("Updating library index"));
     mpProgressBar->setRange(0, 0);
     showProgressBar();
-    if (!MainWindow::instance()->getOMCProxy()->updatePackageIndex()) {
+    if (!MainWindowServices::instance()->getOMCProxy()->updatePackageIndex()) {
       MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica, tr("Failed to update the library index. This could be because of bad internet connection."),
                                                             Helper::scriptingKind, Helper::errorLevel));
     }
@@ -3164,7 +3152,7 @@ void MainWindow::enableReSimulationToolbar(bool visible)
 
 void MainWindow::updateModel(const QString &modelName)
 {
-  updateModelHelper(MainWindow::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem(), modelName);
+  updateModelHelper(MainWindowServices::instance()->getLibraryWidget()->getLibraryTreeModel()->getRootLibraryTreeItem(), modelName);
 }
 
 void MainWindow::updateModelHelper(LibraryTreeItem *pLibraryTreeItem, const QString &modelName)
@@ -4764,7 +4752,7 @@ void AboutOMEditDialog::readOMContributors(QNetworkReply *pNetworkReply)
   JsonDocument jsonDocument;
   if (!jsonDocument.parse(jsonData)) {
     MessagesWidget::instance()->addGUIMessage(MessageItem(MessageItem::Modelica, "Failed to parse json of github contributors.", Helper::scriptingKind, Helper::errorLevel));
-    MainWindow::instance()->printStandardOutAndErrorFilesMessages();
+    MainWindowServices::instance()->printStandardOutAndErrorFilesMessages();
   } else {
     result = jsonDocument.result.toList();
   }

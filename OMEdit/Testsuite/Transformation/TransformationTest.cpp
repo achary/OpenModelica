@@ -63,5 +63,5 @@ void TransformationTest::correctPlacementAnnotation()
 
 void TransformationTest::cleanupTestCase()
 {
-  MainWindow::instance()->close();
+  MainWindowServices::instance()->close();
 }

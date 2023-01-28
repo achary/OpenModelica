@@ -1360,7 +1360,7 @@ QVariant LineAnnotation::itemChange(GraphicsItemChange change, const QVariant &v
 
     // if connection selection is changed in CompositeModel
     if (mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getLibraryType() == LibraryTreeItem::CompositeModel) {
-      MainWindow::instance()->getModelWidgetContainer()->updateThreeDViewer(mpGraphicsView->getModelWidget());
+      MainWindowServices::instance()->getModelWidgetContainer()->updateThreeDViewer(mpGraphicsView->getModelWidget());
     }
   }
 #endif
@@ -1445,7 +1445,7 @@ void LineAnnotation::updateConnectionAnnotation()
     // get the connection line annotation.
     QString annotationString = QString("annotate=$annotation(%1)").arg(getShapeAnnotation());
     // update the connection
-    OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+    OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
     pOMCProxy->updateConnection(mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), getStartElementName(), getEndElementName(), annotationString);
   }
 }
@@ -1494,7 +1494,7 @@ void LineAnnotation::updateTransitionAnnotation(QString oldCondition, bool oldIm
   // get the transition line and text annotation.
   QString annotationString = QString("annotate=$annotation(%1,%2)").arg(getShapeAnnotation()).arg(mpTextAnnotation->getShapeAnnotation());
   // update the transition
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   pOMCProxy->updateTransition(mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), getStartElementName(),
                               getEndElementName(), oldCondition, oldImmediate, oldReset, oldSynchronize, oldPriority, getCondition(),
                               getImmediate(), getReset(), getSynchronize(), getPriority(), annotationString);
@@ -1509,7 +1509,7 @@ void LineAnnotation::updateInitialStateAnnotation()
   // get the initial state line annotation.
   QString annotationString = QString("annotate=$annotation(%1)").arg(getShapeAnnotation());
   // update the initial state
-  OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+  OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
   pOMCProxy->updateInitialState(mpGraphicsView->getModelWidget()->getLibraryTreeItem()->getNameStructure(), getStartElementName(), annotationString);
 }
 

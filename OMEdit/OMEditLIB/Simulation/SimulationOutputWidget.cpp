@@ -460,11 +460,11 @@ void SimulationOutputWidget::addGeneratedFileTab(QString fileName)
     file.open(QIODevice::ReadOnly);
     BaseEditor *pEditor;
     if (Utilities::isCFile(fileInfo.suffix())) {
-      pEditor = new CEditor(MainWindow::instance());
+      pEditor = new CEditor(MainWindowServices::instance()->mainWindowWidget());
       CHighlighter *pCHighlighter = new CHighlighter(OptionsDialog::instance()->getCEditorPage(), pEditor->getPlainTextEdit());
       Q_UNUSED(pCHighlighter);
     } else {
-      pEditor = new TextEditor(MainWindow::instance());
+      pEditor = new TextEditor(MainWindowServices::instance()->mainWindowWidget());
     }
     pEditor->getPlainTextEdit()->setPlainText(QString(file.readAll()));
     mpGeneratedFilesTabWidget->addTab(pEditor, fileInfo.fileName());
@@ -528,7 +528,7 @@ void SimulationOutputWidget::writeSimulationMessage(SimulationMessage *pSimulati
  */
 void SimulationOutputWidget::embeddedServerInitialized()
 {
-  MainWindow::instance()->getSimulationDialog()->createOpcUaClient(mSimulationOptions);
+  MainWindowServices::instance()->getSimulationDialog()->createOpcUaClient(mSimulationOptions);
 }
 
 /*!
@@ -805,9 +805,9 @@ void SimulationOutputWidget::compilationProcessFinishedHelper(int exitCode, QPro
     if (mSimulationOptions.getBuildOnly() &&
         (OptionsDialog::instance()->getDebuggerPage()->getAlwaysShowTransformationsCheckBox()->isChecked() ||
          mSimulationOptions.getLaunchTransformationalDebugger() || profiling)) {
-      MainWindow::instance()->showTransformationsWidget(mSimulationOptions.getWorkingDirectory() + "/" + mSimulationOptions.getOutputFileName() + "_info.json", profiling);
+      MainWindowServices::instance()->showTransformationsWidget(mSimulationOptions.getWorkingDirectory() + "/" + mSimulationOptions.getOutputFileName() + "_info.json", profiling);
     }
-    MainWindow::instance()->getSimulationDialog()->showAlgorithmicDebugger(mSimulationOptions);
+    MainWindowServices::instance()->getSimulationDialog()->showAlgorithmicDebugger(mSimulationOptions);
   }
   mpArchivedSimulationItem->setStatus(Helper::finished);
   // remove the generated files
@@ -924,7 +924,7 @@ void SimulationOutputWidget::simulationProcessFinishedHelper()
   mpProgressLabel->setText(tr("Simulation of %1 is finished.").arg(mSimulationOptions.getClassName()));
   mpProgressBar->setValue(mpProgressBar->maximum());
   mpCancelButton->setEnabled(false);
-  MainWindow::instance()->getSimulationDialog()->simulationProcessFinished(mSimulationOptions, mResultFileLastModifiedDateTime);
+  MainWindowServices::instance()->getSimulationDialog()->simulationProcessFinished(mSimulationOptions, mResultFileLastModifiedDateTime);
   mpArchivedSimulationItem->setStatus(Helper::finished);
   if (mpSimulationOutputHandler) {
     mpSimulationOutputHandler->simulationProcessFinished();
@@ -980,7 +980,7 @@ void SimulationOutputWidget::openTransformationalDebugger()
   QString fileName = QString("%1/%2_info.json").arg(mSimulationOptions.getWorkingDirectory(), mSimulationOptions.getOutputFileName());
   /* open the model_info.json file */
   if (QFileInfo(fileName).exists()) {
-    MainWindow::instance()->showTransformationsWidget(fileName, mSimulationOptions.getProfiling().compare(QStringLiteral("none")) != 0);
+    MainWindowServices::instance()->showTransformationsWidget(fileName, mSimulationOptions.getProfiling().compare(QStringLiteral("none")) != 0);
   } else {
     QMessageBox::critical(this, QString("%1 - %2").arg(Helper::applicationName, Helper::error), GUIMessages::getMessage(GUIMessages::FILE_NOT_FOUND).arg(fileName), Helper::ok);
   }
@@ -1234,7 +1234,7 @@ void SimulationOutputWidget::openTransformationBrowser(QUrl url)
 #endif
     /* open the model_info.json file */
     if (QFileInfo(fileName).exists()) {
-      TransformationsWidget *pTransformationsWidget = MainWindow::instance()->showTransformationsWidget(fileName, mSimulationOptions.getProfiling().compare(QStringLiteral("none")) != 0);
+      TransformationsWidget *pTransformationsWidget = MainWindowServices::instance()->showTransformationsWidget(fileName, mSimulationOptions.getProfiling().compare(QStringLiteral("none")) != 0);
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
       QUrlQuery query(url);
       int equationIndex = query.queryItemValue("index").toInt();

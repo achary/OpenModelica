@@ -121,10 +121,10 @@ void ImportFMUModelDescriptionDialog::importFMUModelDescription()
                           GUIMessages::getMessage(GUIMessages::ENTER_NAME).arg(tr("FMU Model Description XML file")), Helper::ok);
     return;
   }
-  QString fmuFileName = MainWindow::instance()->getOMCProxy()->importFMUModelDescription(mpFmuModelDescriptionTextBox->text(), mpOutputDirectoryTextBox->text(), 1, false, true, true);
+  QString fmuFileName = MainWindowServices::instance()->getOMCProxy()->importFMUModelDescription(mpFmuModelDescriptionTextBox->text(), mpOutputDirectoryTextBox->text(), 1, false, true, true);
 
   if (!fmuFileName.isEmpty()) {
-    MainWindow::instance()->getLibraryWidget()->openFile(fmuFileName);
+    MainWindowServices::instance()->getLibraryWidget()->openFile(fmuFileName);
   }
   //trace import modeldescription
   if (OptionsDialog::instance()->getTraceabilityPage()->getTraceabilityGroupBox()->isChecked() && !fmuFileName.isEmpty()) {
@@ -132,7 +132,7 @@ void ImportFMUModelDescriptionDialog::importFMUModelDescription()
     // Get the name of the file without the extension
     QString base_name = file.baseName();
     //Push traceability information automaticaly to Daemon
-    MainWindow::instance()->getCommitChangesDialog()->generateTraceabilityURI("modelDescriptionImport", fmuFileName, base_name, mpFmuModelDescriptionTextBox->text());
+    MainWindowServices::instance()->getCommitChangesDialog()->generateTraceabilityURI("modelDescriptionImport", fmuFileName, base_name, mpFmuModelDescriptionTextBox->text());
   }
   accept();
 }

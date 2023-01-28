@@ -570,7 +570,7 @@ void TextAnnotation::updateTextStringHelper(QRegExp regExp)
         if (!textValue.isEmpty()) {
           QString unit = mpElement->getRootParentElement()->getParameterModifierValue(variable, "unit");
           QString displayUnit = mpElement->getRootParentElement()->getParameterModifierValue(variable, "displayUnit");
-          if (MainWindow::instance()->isNewApi()) {
+          if (MainWindowServices::instance()->isNewApi()) {
             ModelInstance::Element* pModelElement = Element::getModelElementByName(mpElement->getRootParentElement()->getModel(), variable);
             if (pModelElement) {
               if (displayUnit.isEmpty()) {
@@ -602,7 +602,7 @@ void TextAnnotation::updateTextStringHelper(QRegExp regExp)
           } else if (unit.compare(displayUnit) == 0) {  // Do not do any conversion if unit and displayUnit are same.
             textValueWithDisplayUnit = QString("%1 %2").arg(textValue, Utilities::convertUnitToSymbol(displayUnit));
           } else {
-            OMCProxy *pOMCProxy = MainWindow::instance()->getOMCProxy();
+            OMCProxy *pOMCProxy = MainWindowServices::instance()->getOMCProxy();
             OMCInterface::convertUnits_res convertUnit = pOMCProxy->convertUnits(unit, displayUnit);
             if (convertUnit.unitsCompatible) {
               qreal convertedValue = Utilities::convertUnit(textValue.toDouble(), convertUnit.offset, convertUnit.scaleFactor);

@@ -64,7 +64,7 @@ public:
     setMaxStepSize("");
     setMaxIntegration(5);
     setCflags("");
-    setNumberOfProcessors(MainWindow::instance()->getNumberOfProcessors());
+    setNumberOfProcessors(MainWindowServices::instance()->getNumberOfProcessors());
     setBuildOnly(false);
     setLaunchTransformationalDebugger(false);
     setLaunchAlgorithmicDebugger(false);

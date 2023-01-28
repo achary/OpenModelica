@@ -220,7 +220,7 @@ bool DebuggerConfigurationPage::saveDebugConfiguration()
   pSettings->setValue("debuggerConfigurationList/configurations", debugConfigurations);
   mpConfigurationListWidgetItem->setText(mpNameTextBox->text());
   // update the debug configuration toolbar menu
-  MainWindow::instance()->updateDebuggerToolBarMenu();
+  MainWindowServices::instance()->updateDebuggerToolBarMenu();
   return true;
 }
 
@@ -406,7 +406,7 @@ void DebuggerConfigurationsDialog::runConfiguration(DebuggerConfigurationPage *p
     debugConfigurations.prepend(pDebuggerConfigurationPage->mDebuggerConfiguration);
     pSettings->setValue("debuggerConfigurationList/configurations", debugConfigurations);
     // update the debug configuration toolbar menu
-    MainWindow::instance()->updateDebuggerToolBarMenu();
+    MainWindowServices::instance()->updateDebuggerToolBarMenu();
     // Run the debug configuration now
     QString gdbPath = "";
     if (pDebuggerConfigurationPage->mDebuggerConfiguration.GDBPath.isEmpty()) {
@@ -477,7 +477,7 @@ void DebuggerConfigurationsDialog::newConfiguration()
     adjustSize();
   }
   // update the debug configuration toolbar menu
-  MainWindow::instance()->updateDebuggerToolBarMenu();
+  MainWindowServices::instance()->updateDebuggerToolBarMenu();
 }
 
 /*!
@@ -515,7 +515,7 @@ void DebuggerConfigurationsDialog::removeConfiguration()
       debugConfigurations.removeOne(debugConfiguration);
       pSettings->setValue("debuggerConfigurationList/configurations", debugConfigurations);
       // update the debug configuration toolbar menu
-      MainWindow::instance()->updateDebuggerToolBarMenu();
+      MainWindowServices::instance()->updateDebuggerToolBarMenu();
 
       bool state = mpConfigurationsListWidget->blockSignals(true);
       QWidget *pWidget = mpConfigurationPagesWidget->widget(mpConfigurationsListWidget->currentRow());
